@@ -1,0 +1,204 @@
+/**
+ * 中奖结果组件样式
+ */
+
+.winner-display {
+  padding: 2rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 16px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  margin: 2rem 0;
+}
+
+.winner-title {
+  text-align: center;
+  color: #fff;
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 2rem;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  animation: titlePulse 2s ease-in-out infinite;
+}
+
+@keyframes titlePulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+.winners-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.winner-card {
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  animation: slideIn 0.6s ease-out forwards;
+  opacity: 0;
+  transform: translateX(-50px);
+}
+
+@keyframes slideIn {
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.winner-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* 第一名特殊样式 */
+.winner-card.rank-1 {
+  border: 3px solid #ffd700;
+  background: linear-gradient(135deg, #fff9e6 0%, #ffffff 100%);
+}
+
+.winner-card.rank-1 .winner-rank-badge {
+  background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+  color: #8b6914;
+}
+
+/* 第二名特殊样式 */
+.winner-card.rank-2 {
+  border: 3px solid #c0c0c0;
+  background: linear-gradient(135deg, #f5f5f5 0%, #ffffff 100%);
+}
+
+.winner-card.rank-2 .winner-rank-badge {
+  background: linear-gradient(135deg, #c0c0c0 0%, #e8e8e8 100%);
+  color: #5a5a5a;
+}
+
+/* 第三名特殊样式 */
+.winner-card.rank-3 {
+  border: 3px solid #cd7f32;
+  background: linear-gradient(135deg, #fff5e6 0%, #ffffff 100%);
+}
+
+.winner-card.rank-3 .winner-rank-badge {
+  background: linear-gradient(135deg, #cd7f32 0%, #e8a87c 100%);
+  color: #5c3a1a;
+}
+
+.winner-rank-badge {
+  font-size: 1.2rem;
+  font-weight: bold;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  margin-right: 1.5rem;
+  min-width: 120px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.winner-avatar-container {
+  position: relative;
+  margin-right: 1.5rem;
+}
+
+.winner-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  border: 4px solid #fff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  object-fit: cover;
+  animation: avatarBounce 1s ease-in-out;
+}
+
+@keyframes avatarBounce {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+.winner-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.winner-nickname {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #333;
+  margin: 0;
+}
+
+.winner-shake-count {
+  font-size: 1.1rem;
+  color: #666;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.shake-icon {
+  font-size: 1.3rem;
+}
+
+.winner-shake-count strong {
+  color: #667eea;
+  font-size: 1.3rem;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .winner-display {
+    padding: 1rem;
+  }
+
+  .winner-title {
+    font-size: 1.5rem;
+  }
+
+  .winner-card {
+    flex-direction: column;
+    text-align: center;
+    padding: 1rem;
+  }
+
+  .winner-rank-badge {
+    margin-right: 0;
+    margin-bottom: 1rem;
+  }
+
+  .winner-avatar-container {
+    margin-right: 0;
+    margin-bottom: 1rem;
+  }
+
+  .winner-avatar {
+    width: 60px;
+    height: 60px;
+  }
+
+  .winner-nickname {
+    font-size: 1.2rem;
+  }
+
+  .winner-shake-count {
+    font-size: 1rem;
+    justify-content: center;
+  }
+}

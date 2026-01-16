@@ -1,0 +1,119 @@
+.error-boundary-h5 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 20px;
+}
+
+.error-boundary-content {
+  background: white;
+  border-radius: 16px;
+  padding: 32px 24px;
+  max-width: 400px;
+  width: 100%;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  text-align: center;
+}
+
+.error-icon {
+  font-size: 56px;
+  margin-bottom: 16px;
+  animation: shake 0.5s ease-in-out;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-8px); }
+  75% { transform: translateX(8px); }
+}
+
+.error-title {
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+  margin: 0 0 12px 0;
+}
+
+.error-message {
+  font-size: 15px;
+  color: #666;
+  margin: 0 0 8px 0;
+  line-height: 1.5;
+}
+
+.error-hint {
+  font-size: 13px;
+  color: #999;
+  margin: 0 0 24px 0;
+  line-height: 1.5;
+}
+
+.error-details {
+  text-align: left;
+  margin: 20px 0;
+  padding: 12px;
+  background: #f5f5f5;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.error-details summary {
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 8px;
+}
+
+.error-stack {
+  font-family: 'Courier New', monospace;
+  font-size: 11px;
+  color: #d32f2f;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  margin: 0;
+}
+
+.error-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.error-btn {
+  width: 100%;
+  padding: 14px 24px;
+  font-size: 16px;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.error-btn-primary {
+  background: #667eea;
+  color: white;
+}
+
+.error-btn-primary:active {
+  background: #5568d3;
+  transform: scale(0.98);
+}
+
+.error-btn-secondary {
+  background: #f5f5f5;
+  color: #666;
+}
+
+.error-btn-secondary:active {
+  background: #e0e0e0;
+  transform: scale(0.98);
+}
