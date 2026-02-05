@@ -30,7 +30,7 @@ export function MainPage() {
   const { state, dispatch } = useLottery();
   const [wsClient, setWsClient] = useState<WebSocketClient | null>(null);
   const [qrCodeUrl, setQrCodeUrl] = useState<string>('');
-  const [duration, setDuration] = useState<number>(30); // 默认30秒
+  const [duration, setDuration] = useState<number>(60); // 默认60秒
   const [isCreatingSession, setIsCreatingSession] = useState(false);
   const [connectionStatus, setConnectionStatus] = useState<string>('disconnected');
   

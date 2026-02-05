@@ -37,6 +37,54 @@ const AuthPage: React.FC<AuthPageProps> = ({ sessionId, onAuthSuccess }) => {
   useEffect(() => {
     // 检查URL中是否有授权回调参数
     const urlParams = new URLSearchParams(window.location.search);
+
+    // 方案A: 检查是否有 base64 编码的用户信息（从后端重定向带回）
+    const userInfoBase64 = urlParams.get('userInfo');
+    const errorFromCallback = urlParams.get('error');
+
+    if (errorFromCallback) {
+      // 处理后端返回的错误
+      setAuthStatus('failed');
+      setErrorMessage(decodeURIComponent(errorFromCallback));
+      // 清除URL中的错误参数
+      const newUrl = new URL(window.location.href);
+      newUrl.searchParams.delete('error');
+      window.history.replaceState({}, document.title, newUrl.toString());
+      return;
+    }
+
+    if (userInfoBase64) {
+      // 解析 base64 编码的用户信息
+      try {
+        const userInfoJson = atob(userInfoBase64);
+        const userInfo: WeChatUserInfo = JSON.parse(userInfoJson);
+
+        // 验证用户信息完整性
+        if (!userInfo.openid || !userInfo.nickname || !userInfo.headimgurl) {
+          throw new Error('用户信息不完整');
+        }
+
+        // 更新状态
+        setUserInfo(userInfo);
+        setAuthStatus('success');
+        setErrorMessage(null);
+
+        // 清除URL中的用户信息参数
+        const newUrl = new URL(window.location.href);
+        newUrl.searchParams.delete('userInfo');
+        window.history.replaceState({}, document.title, newUrl.toString());
+
+        // 通知父组件授权成功
+        onAuthSuccess(userInfo);
+      } catch (error) {
+        console.error('Failed to parse user info:', error);
+        setAuthStatus('failed');
+        setErrorMessage('解析用户信息失败，请重新授权');
+      }
+      return;
+    }
+
+    // 方案B兼容: 检查是否有 code 和 state（旧的回调方式）
     const code = urlParams.get('code');
     const state = urlParams.get('state');
 

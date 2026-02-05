@@ -16,17 +16,17 @@ export const corsOptions: CorsOptions = {
     if (process.env.NODE_ENV === 'test') {
       return callback(null, true);
     }
-    
+
     // Get allowed origins from environment variable
     const allowedOrigins = process.env.CORS_ORIGIN?.split(',').map(o => o.trim()) || [];
-    
-    // In development, allow requests with no origin (like mobile apps or curl requests)
-    if (!origin && process.env.NODE_ENV === 'development') {
+
+    // Allow requests with no origin (browser direct access, mobile apps, curl, etc.)
+    if (!origin) {
       return callback(null, true);
     }
-    
+
     // Check if origin is in allowed list
-    if (origin && allowedOrigins.includes(origin)) {
+    if (allowedOrigins.includes(origin)) {
       callback(null, true);
     } else if (allowedOrigins.includes('*')) {
       // Allow all origins if wildcard is specified (not recommended for production)
@@ -134,10 +134,18 @@ export const getHttpsOptions = () => {
 export const forceHttpsMiddleware = (req: Request, res: Response, next: NextFunction) => {
   // Only enforce HTTPS in production
   if (process.env.NODE_ENV === 'production') {
-    // Check if request is not secure
-    if (!req.secure && req.get('x-forwarded-proto') !== 'https') {
-      // Redirect to HTTPS
-      return res.redirect(301, `https://${req.get('host')}${req.url}`);
+    // Check if request is already secure or proxied through HTTPS
+    const isSecure = req.secure || req.get('x-forwarded-proto') === 'https';
+    
+    if (!isSecure) {
+      // Only redirect if the request is truly coming from HTTP
+      // Skip if it's coming from the internal proxy (which may use HTTP internally)
+      const forwardedHost = req.get('x-forwarded-host');
+      const isInternal = !forwardedHost;
+      
+      if (!isInternal) {
+        return res.redirect(301, `https://${req.get('host')}${req.url}`);
+      }
     }
   }
   next();

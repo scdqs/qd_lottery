@@ -78,7 +78,7 @@ export function setupWebSocketServer(
 
   // 处理客户端连接
   io.on('connection', (socket: Socket<ClientToServerEvents, ServerToClientEvents, {}, SocketData>) => {
-    console.log(`Client connected: ${socket.id}`);
+    console.log('Client connected:', socket.id);
 
     // 处理加入会话事件
     socket.on('join-session', (data) => {
@@ -152,14 +152,14 @@ function handleJoinSession(
     // 发送成功响应
     socket.emit('session-joined', { success: true });
 
-    console.log(`Client ${socket.id} (${clientType}) joined session ${sessionId}`);
+    console.log('Client joined session:', { socketId: socket.id, clientType, sessionId });
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     socket.emit('session-joined', {
       success: false,
       message: errorMessage,
     });
-    console.error(`Error joining session: ${errorMessage}`);
+    console.error('Error joining session:', errorMessage);
   }
 }
 
@@ -200,14 +200,14 @@ function handleUserAuthorized(
     // 如果是新参与者，向Web端广播参与者加入事件
     if (added && session.webClient) {
       io.to(session.webClient).emit('participant-joined', { participant });
-      console.log(`Participant ${participant.nickname} joined session ${sessionId}`);
+      console.log('Participant joined session:', { nickname: participant.nickname, sessionId });
     } else if (!added) {
-      console.log(`Participant ${participant.nickname} already in session ${sessionId}`);
+      console.log('Participant already in session:', { nickname: participant.nickname, sessionId });
     }
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     socket.emit('error', { message: errorMessage });
-    console.error(`Error handling user authorization: ${errorMessage}`);
+    console.error('Error handling user authorization:', errorMessage);
   }
 }
 
@@ -243,11 +243,11 @@ function handleStartLottery(
     const startTime = Date.now();
     io.to(sessionId).emit('lottery-started', { duration, startTime });
 
-    console.log(`Lottery started in session ${sessionId}, duration: ${duration}s`);
+    console.log('Lottery started in session:', { sessionId, duration });
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     socket.emit('error', { message: errorMessage });
-    console.error(`Error starting lottery: ${errorMessage}`);
+    console.error('Error starting lottery:', errorMessage);
   }
 }
 
@@ -288,11 +288,11 @@ function handleStopLottery(
     // 向该会话的所有客户端广播中奖结果
     io.to(sessionId).emit('lottery-result', { winners });
 
-    console.log(`Lottery stopped in session ${sessionId}, winners:`, winners);
+    console.log('Lottery stopped in session:', { sessionId, winners });
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     socket.emit('error', { message: errorMessage });
-    console.error(`Error stopping lottery: ${errorMessage}`);
+    console.error('Error stopping lottery:', errorMessage);
   }
 }
 
@@ -321,11 +321,11 @@ function handleShakeData(
     // 向该会话的所有客户端广播摇动数据更新
     io.to(sessionId).emit('shake-update', { userId, shakeCount });
 
-    console.log(`Shake data updated: session=${sessionId}, user=${userId}, count=${shakeCount}`);
+    console.log('Shake data updated:', { sessionId, userId, shakeCount });
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     socket.emit('error', { message: errorMessage });
-    console.error(`Error handling shake data: ${errorMessage}`);
+    console.error('Error handling shake data:', errorMessage);
   }
 }
 
@@ -342,11 +342,11 @@ function handleDisconnect(
     try {
       // 从会话中移除H5客户端
       sessionManager.removeH5Client(sessionId, socket.id);
-      console.log(`H5 client ${socket.id} disconnected from session ${sessionId}`);
+      console.log('H5 client disconnected:', { socketId: socket.id, sessionId });
     } catch (error) {
-      console.error(`Error removing H5 client: ${error}`);
+      console.error('Error removing H5 client:', error);
     }
   }
 
-  console.log(`Client disconnected: ${socket.id}`);
+  console.log('Client disconnected:', socket.id);
 }

@@ -223,49 +223,48 @@ app.get('/api/wechat/auth', (req, res) => {
 
 // WeChat authorization callback endpoint
 app.get('/api/wechat/callback', async (req, res) => {
+  // H5 client base URL for redirects
+  const h5BaseUrl = process.env.H5_BASE_URL || 'http://localhost:5173';
+
   try {
     const { code, state } = req.query;
-    
+
     // Validate required parameters
     if (!code || typeof code !== 'string') {
-      return res.status(400).json({
-        error: 'Invalid authorization code',
-        message: 'Authorization code is required and must be a string',
-      });
+      const errorMsg = encodeURIComponent('授权码无效');
+      return res.redirect(`${h5BaseUrl}?error=${errorMsg}`);
     }
-    
+
     if (!state || typeof state !== 'string') {
-      return res.status(400).json({
-        error: 'Invalid state parameter',
-        message: 'State parameter (sessionId) is required and must be a string',
-      });
+      const errorMsg = encodeURIComponent('会话参数无效');
+      return res.redirect(`${h5BaseUrl}?error=${errorMsg}`);
     }
-    
+
     const sessionId = state;
-    
+
     // Verify session exists
     const session = sessionManager.getSession(sessionId);
     if (!session) {
-      return res.status(404).json({
-        error: 'Session not found',
-        message: `Session with ID ${sessionId} does not exist or has been deleted`,
-      });
+      const errorMsg = encodeURIComponent('会话不存在或已过期');
+      return res.redirect(`${h5BaseUrl}?sessionId=${sessionId}&error=${errorMsg}`);
     }
-    
+
     // Handle authorization callback and get user info
     const userInfo = await wechatAuthService.handleCallback(code);
-    
-    // Return user info and session ID to H5 client
-    res.json({
-      userInfo,
-      sessionId,
-    });
+
+    // Encode user info as base64 to pass via URL
+    const userInfoBase64 = Buffer.from(JSON.stringify(userInfo)).toString('base64');
+
+    // Redirect back to H5 client with user info
+    res.redirect(`${h5BaseUrl}?sessionId=${sessionId}&userInfo=${userInfoBase64}`);
   } catch (error) {
     console.error('Error handling WeChat callback:', error);
-    res.status(500).json({
-      error: 'WeChat authorization failed',
-      message: error instanceof Error ? error.message : 'Unknown error',
-    });
+    const errorMsg = encodeURIComponent(error instanceof Error ? error.message : '微信授权失败');
+    const sessionId = req.query.state as string;
+    const redirectUrl = sessionId
+      ? `${h5BaseUrl}?sessionId=${sessionId}&error=${errorMsg}`
+      : `${h5BaseUrl}?error=${errorMsg}`;
+    res.redirect(redirectUrl);
   }
 });
 
