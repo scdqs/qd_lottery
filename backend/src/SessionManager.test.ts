@@ -226,10 +226,22 @@ describe('SessionManager', () => {
       }).toThrow('Session non-existent-id not found');
     });
 
-    it('should throw error for non-existent participant', () => {
-      expect(() => {
-        sessionManager.updateShakeData(sessionId, 'non-existent-user', 10);
-      }).toThrow('Participant non-existent-user not found');
+    it('should allow shake data before participant is added', () => {
+      const session = sessionManager.createSession();
+      const preUserId = 'pre-user';
+      sessionManager.updateShakeData(session.id, preUserId, 10);
+
+      const participant: Participant = {
+        userId: preUserId,
+        nickname: '预注册用户',
+        avatarUrl: 'https://example.com/avatar.jpg',
+        joinedAt: Date.now(),
+        socketId: 'socket-pre',
+      };
+
+      sessionManager.addParticipant(session.id, participant);
+      const shakeCount = sessionManager.getShakeData(session.id, preUserId);
+      expect(shakeCount).toBe(10);
     });
 
     it('should throw error for negative shake count', () => {

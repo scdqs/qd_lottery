@@ -63,8 +63,10 @@ export class SessionManager {
     // 添加参与者
     session.participants.set(participant.userId, participant);
     
-    // 初始化摇动数据为0
-    session.shakeData.set(participant.userId, 0);
+    // 初始化摇动数据为0（如已有预存数据则保留）
+    if (!session.shakeData.has(participant.userId)) {
+      session.shakeData.set(participant.userId, 0);
+    }
 
     return true;
   }
@@ -108,11 +110,6 @@ export class SessionManager {
     const session = this.sessions.get(sessionId);
     if (!session) {
       throw new Error(`Session ${sessionId} not found`);
-    }
-
-    // 验证参与者是否存在
-    if (!session.participants.has(userId)) {
-      throw new Error(`Participant ${userId} not found in session ${sessionId}`);
     }
 
     // 验证摇动次数为非负整数

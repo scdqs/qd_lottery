@@ -18,6 +18,7 @@ function AppContent() {
     authStatus,
     setErrorMessage,
     setShakeStatus,
+    setShakeCount,
     setWinners,
     checkWinnerStatus,
   } = useAppContext();
@@ -133,6 +134,12 @@ function AppContent() {
       // 监听中奖结果
       client.onLotteryResult((data) => {
         console.log('Lottery result:', data);
+        if (data.finalShakeData && userInfo) {
+          const finalCount = data.finalShakeData[userInfo.openid];
+          if (typeof finalCount === 'number') {
+            setShakeCount(finalCount);
+          }
+        }
         // 触发ShakePage的handleLotteryResult方法
         if ((window as any).__shakePageMethods) {
           (window as any).__shakePageMethods.handleLotteryResult(data.winners);

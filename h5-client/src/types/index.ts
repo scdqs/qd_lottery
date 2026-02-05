@@ -80,6 +80,6 @@ export interface ServerEvents {
   'lottery-started': (data: { duration: number; startTime: number }) => void;
   'lottery-stopped': () => void;
   'shake-update': (data: { userId: string; shakeCount: number }) => void;
-  'lottery-result': (data: { winners: Winner[] }) => void;
+  'lottery-result': (data: { winners: Winner[]; finalShakeData?: Record<string, number> }) => void;
   'error': (data: { message: string }) => void;
 }

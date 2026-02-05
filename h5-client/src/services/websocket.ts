@@ -171,7 +171,7 @@ export class WebSocketClient {
   /**
    * 监听中奖结果
    */
-  onLotteryResult(callback: (data: { winners: any[] }) => void): void {
+  onLotteryResult(callback: (data: { winners: any[]; finalShakeData?: Record<string, number> }) => void): void {
     this.on('lottery-result', callback);
   }
 

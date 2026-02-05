@@ -39,7 +39,7 @@ export interface ServerToClientEvents {
   'lottery-started': (data: { duration: number; startTime: number }) => void;
   'lottery-stopped': () => void;
   'shake-update': (data: { userId: string; shakeCount: number }) => void;
-  'lottery-result': (data: { winners: any[] }) => void;
+  'lottery-result': (data: { winners: any[]; finalShakeData?: Record<string, number> }) => void;
   'error': (data: { message: string }) => void;
 }
 
@@ -296,13 +296,25 @@ function handleStopLottery(
     // 向该会话的所有客户端广播停止抽奖事件
     io.to(sessionId).emit('lottery-stopped');
 
-    // 计算中奖者
-    const winners = sessionManager.calculateWinners(sessionId);
+    // 等待短暂时间，接收可能在途的最后摇动数据
+    setTimeout(() => {
+      try {
+        // 计算中奖者
+        const winners = sessionManager.calculateWinners(sessionId);
+        const finalShakeData = Object.fromEntries(
+          sessionManager.getAllShakeData(sessionId)
+        );
 
-    // 向该会话的所有客户端广播中奖结果
-    io.to(sessionId).emit('lottery-result', { winners });
+        // 向该会话的所有客户端广播中奖结果和最终计数
+        io.to(sessionId).emit('lottery-result', { winners, finalShakeData });
 
-    console.log('Lottery stopped in session:', { sessionId, winners });
+        console.log('Lottery stopped in session:', { sessionId, winners });
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+        socket.emit('error', { message: errorMessage });
+        console.error('Error finalizing lottery:', errorMessage);
+      }
+    }, 200);
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     socket.emit('error', { message: errorMessage });
