@@ -253,7 +253,9 @@ app.get('/api/wechat/callback', async (req, res) => {
     const userInfo = await wechatAuthService.handleCallback(code);
 
     // Encode user info as base64 to pass via URL
-    const userInfoBase64 = Buffer.from(JSON.stringify(userInfo)).toString('base64');
+    const userInfoBase64 = encodeURIComponent(
+      Buffer.from(JSON.stringify(userInfo)).toString('base64')
+    );
 
     // Redirect back to H5 client with user info
     res.redirect(`${h5BaseUrl}?sessionId=${sessionId}&userInfo=${userInfoBase64}`);

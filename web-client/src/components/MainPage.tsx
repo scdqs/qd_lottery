@@ -5,7 +5,7 @@
  * 需求: 1.1, 1.2, 1.3, 4.1, 4.2, 4.5
  */
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useLottery } from '../context/LotteryContext';
 import { createSession } from '../services/api';
 import { WebSocketClient } from '../services/websocket';
@@ -33,9 +33,29 @@ export function MainPage() {
   const [duration, setDuration] = useState<number>(60); // 默认60秒
   const [isCreatingSession, setIsCreatingSession] = useState(false);
   const [connectionStatus, setConnectionStatus] = useState<string>('disconnected');
+  const pendingShakeUpdatesRef = useRef<Map<string, number>>(new Map());
+  const flushTimerRef = useRef<number | null>(null);
   
   // 使用通知Hook
   const { notifications, removeNotification, showError, showWarning, showSuccess, showInfo } = useNotification();
+
+  const scheduleShakeFlush = useCallback(() => {
+    if (flushTimerRef.current !== null) {
+      return;
+    }
+
+    flushTimerRef.current = window.setTimeout(() => {
+      flushTimerRef.current = null;
+      const entries = Array.from(pendingShakeUpdatesRef.current, ([userId, shakeCount]) => ({
+        userId,
+        shakeCount,
+      }));
+      pendingShakeUpdatesRef.current.clear();
+      if (entries.length > 0) {
+        dispatch({ type: 'BATCH_SHAKE_DATA', payload: entries });
+      }
+    }, 100);
+  }, [dispatch]);
 
   // 创建会话
   const handleCreateSession = useCallback(async () => {
@@ -104,10 +124,8 @@ export function MainPage() {
 
       // 监听摇动数据更新
       socket.on('shake-update', (data) => {
-        dispatch({
-          type: 'UPDATE_SHAKE_DATA',
-          payload: { userId: data.userId, shakeCount: data.shakeCount },
-        });
+        pendingShakeUpdatesRef.current.set(data.userId, data.shakeCount);
+        scheduleShakeFlush();
       });
 
       // 监听抽奖结果
@@ -183,6 +201,10 @@ export function MainPage() {
   // 清理WebSocket连接
   useEffect(() => {
     return () => {
+      if (flushTimerRef.current !== null) {
+        window.clearTimeout(flushTimerRef.current);
+      }
+      pendingShakeUpdatesRef.current.clear();
       if (wsClient) {
         wsClient.disconnect();
       }
@@ -234,12 +256,14 @@ export function MainPage() {
         onRemove={removeNotification}
       />
 
-      {/* 连接状态指示器 */}
-      <ConnectionStatusIndicator
-        status={connectionStatus as any}
-        onReconnect={handleReconnect}
-        onRefresh={handleRefresh}
-      />
+      {/* 连接状态指示器 - 只在会话创建后显示 */}
+      {state.lotteryStatus !== 'idle' && (
+        <ConnectionStatusIndicator
+          status={connectionStatus as any}
+          onReconnect={handleReconnect}
+          onRefresh={handleRefresh}
+        />
+      )}
 
       <header className="main-header">
         <h1>公司抽奖系统</h1>

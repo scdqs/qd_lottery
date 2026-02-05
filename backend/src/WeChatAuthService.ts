@@ -39,7 +39,7 @@ export class WeChatAuthService {
   getAuthUrl(sessionId: string): string {
     // 微信网页授权URL
     const baseUrl = 'https://open.weixin.qq.com/connect/oauth2/authorize';
-    
+
     // 构建授权URL参数
     const params = new URLSearchParams({
       appid: this.appId,
@@ -123,8 +123,46 @@ export class WeChatAuthService {
         lang: 'zh_CN',
       };
 
-      const response = await axios.get(url, { params });
-      const data = response.data;
+      // 解决微信API返回中文昵称时的编码问题
+      // 参考: https://blog.csdn.net/weixin_47792780/article/details/136894444
+      // 微信接口返回的数据可能被axios错误地以ISO-8859-1解码，导致中文乱码
+      // 解决方案：使用 responseType: 'arraybuffer' 获取原始字节，然后手动UTF-8解码
+      const response = await axios.get(url, {
+        params,
+        responseType: 'arraybuffer',
+        // 强制不转换响应数据，保持原始字节
+        transformResponse: [(data) => data],
+      });
+
+      let dataStr: string;
+      const rawData = response.data;
+
+      if (typeof rawData === 'string') {
+        // 如果axios返回了字符串（responseType:arraybuffer未生效），
+        // 说明原始UTF-8字节被作为ISO-8859-1/latin1字符处理了。
+        // 例如 "蜃" (UTF-8: 0xE8 0x9C 0x83) 显示为 'è\x9C\x83'
+        // 需要用latin1编码还原回Buffer，再用utf-8解码
+        dataStr = Buffer.from(rawData, 'latin1').toString('utf-8');
+      } else if (Buffer.isBuffer(rawData)) {
+        // Node.js Buffer，直接解码
+        dataStr = rawData.toString('utf-8');
+      } else if (rawData instanceof ArrayBuffer) {
+        // ArrayBuffer，转换为Buffer后解码
+        dataStr = Buffer.from(rawData).toString('utf-8');
+      } else {
+        // 其他情况，尝试通过Buffer处理
+        dataStr = Buffer.from(rawData).toString('utf-8');
+      }
+
+      // 打印原始数据用于调试（仅在开发环境）
+      if (process.env.NODE_ENV !== 'production') {
+        console.log('WeChat userinfo raw response type:', typeof rawData, Buffer.isBuffer(rawData));
+      }
+
+      const data = JSON.parse(dataStr);
+
+      // 打印解析后的昵称用于验证编码是否正确
+      console.log('WeChat userinfo parsed nickname:', data.nickname);
 
       // 检查微信API返回的错误
       if (data.errcode) {

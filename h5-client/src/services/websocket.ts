@@ -20,6 +20,12 @@ export class WebSocketClient {
   private reconnectAttempts = 0;
   private maxReconnectAttempts: number;
   private isManualDisconnect = false;
+  private errorListeners: Array<(data: { message: string }) => void> = [];
+  private pendingJoin: { sessionId: string; clientType: 'h5' } | null = null;
+  private pendingUserInfo: { sessionId: string; userInfo: WeChatUserInfo } | null = null;
+  private pendingShakeData:
+    | { sessionId: string; userId: string; shakeCount: number }
+    | null = null;
 
   constructor(config: WebSocketConfig) {
     this.config = config;
@@ -46,6 +52,7 @@ export class WebSocketClient {
           console.log('WebSocket connected');
           this.reconnectAttempts = 0;
           this.isManualDisconnect = false;
+          this.flushPending();
           resolve();
         });
 
@@ -95,7 +102,7 @@ export class WebSocketClient {
       console.log(`Attempting to reconnect (${this.reconnectAttempts}/${this.maxReconnectAttempts})`);
     } else {
       console.error('Maximum reconnection attempts reached');
-      this.emit('error', { message: '连接已断开，请刷新页面重试' });
+      this.notifyError('连接已断开，请刷新页面重试');
     }
   }
 
@@ -114,27 +121,36 @@ export class WebSocketClient {
    * 加入会话
    */
   joinSession(sessionId: string): void {
-    this.emit('join-session', { sessionId, clientType: 'h5' });
+    this.pendingJoin = { sessionId, clientType: 'h5' };
+    this.emitIfConnected('join-session', this.pendingJoin);
   }
 
   /**
    * 发送用户授权信息
    */
   sendUserInfo(sessionId: string, userInfo: WeChatUserInfo): void {
-    this.emit('user-authorized', { sessionId, userInfo });
+    this.pendingUserInfo = { sessionId, userInfo };
+    this.emitIfConnected('user-authorized', this.pendingUserInfo);
   }
 
   /**
    * 发送摇动数据
    */
   sendShakeData(sessionId: string, userId: string, shakeCount: number): void {
-    this.emit('shake-data', { sessionId, userId, shakeCount });
+    this.pendingShakeData = { sessionId, userId, shakeCount };
+    this.emitIfConnected('shake-data', this.pendingShakeData);
   }
 
   /**
    * 监听会话加入结果
    */
-  onSessionJoined(callback: (data: { success: boolean; message?: string }) => void): void {
+  onSessionJoined(callback: (data: {
+    success: boolean;
+    message?: string;
+    sessionStatus?: 'waiting' | 'running' | 'finished';
+    lotteryStartTime?: number;
+    lotteryDuration?: number;
+  }) => void): void {
     this.on('session-joined', callback);
   }
 
@@ -163,17 +179,39 @@ export class WebSocketClient {
    * 监听错误事件
    */
   onError(callback: (data: { message: string }) => void): void {
+    this.errorListeners.push(callback);
     this.on('error', callback);
   }
 
   /**
    * 发送事件
    */
-  private emit(event: string, data: any): void {
+  private emitIfConnected(event: string, data: any): void {
     if (this.socket && this.socket.connected) {
       this.socket.emit(event, data);
-    } else {
-      console.error('Cannot emit event: socket not connected');
+    }
+  }
+
+  private notifyError(message: string): void {
+    const payload = { message };
+    for (const listener of this.errorListeners) {
+      listener(payload);
+    }
+  }
+
+  private flushPending(): void {
+    if (!this.socket || !this.socket.connected) {
+      return;
+    }
+
+    if (this.pendingJoin) {
+      this.socket.emit('join-session', this.pendingJoin);
+    }
+    if (this.pendingUserInfo) {
+      this.socket.emit('user-authorized', this.pendingUserInfo);
+    }
+    if (this.pendingShakeData) {
+      this.socket.emit('shake-data', this.pendingShakeData);
     }
   }
 

@@ -44,6 +44,7 @@ const ShakePage: React.FC<ShakePageProps> = ({
   const [testMode, setTestMode] = useState(false); // 测试模式：使用按钮代替摇动
   const lastSendTimeRef = useRef<number>(0);
   const pendingCountRef = useRef<number | null>(null);
+  const latestShakeCountRef = useRef<number>(0);
 
   useEffect(() => {
     // 初始化传感器
@@ -119,6 +120,10 @@ const ShakePage: React.FC<ShakePageProps> = ({
     };
   }, [shakeStatus, throttleInterval, onShakeCountUpdate]);
 
+  useEffect(() => {
+    latestShakeCountRef.current = shakeCount;
+  }, [shakeCount]);
+
   /**
    * 测试模式：手动增加摇动次数
    */
@@ -128,6 +133,7 @@ const ShakePage: React.FC<ShakePageProps> = ({
     }
     
     const newCount = shakeCount + 1;
+    latestShakeCountRef.current = newCount;
     setShakeCount(newCount);
     throttledSendShakeData(newCount);
   };
@@ -190,6 +196,7 @@ const ShakePage: React.FC<ShakePageProps> = ({
       
       // 启动传感器监听（异步，可能需要请求权限）
       await sensorRef.current.start((count) => {
+        latestShakeCountRef.current = count;
         setShakeCount(count);
         throttledSendShakeData(count); // 使用节流发送
       });
@@ -215,6 +222,14 @@ const ShakePage: React.FC<ShakePageProps> = ({
   const stopShaking = () => {
     if (sensorRef.current) {
       sensorRef.current.stop();
+      // Flush latest count to keep web/h5 in sync
+      const pendingCount = pendingCountRef.current ?? 0;
+      const latestCount = Math.max(latestShakeCountRef.current, pendingCount, shakeCount);
+      if (latestCount > 0) {
+        onShakeCountUpdate(latestCount);
+        pendingCountRef.current = null;
+        lastSendTimeRef.current = Date.now();
+      }
       setShakeStatus('stopped');
     }
   };

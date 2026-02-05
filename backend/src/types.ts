@@ -29,6 +29,8 @@ export interface Session {
   shakeData: Map<string, number>;          // 摇动数据（userId -> shakeCount）
   webClient: string | null;                // Web端客户端Socket ID
   h5Clients: Set<string>;                  // H5端客户端Socket ID集合
+  lotteryStartTime?: number;               // 抽奖开始时间戳
+  lotteryDuration?: number;                // 抽奖时长（秒）
 }
 
 /**

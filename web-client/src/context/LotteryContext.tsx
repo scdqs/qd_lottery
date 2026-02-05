@@ -38,6 +38,7 @@ export type LotteryAction =
   | { type: 'SET_SESSION_INFO'; payload: SessionInfo }
   | { type: 'ADD_PARTICIPANT'; payload: Participant }
   | { type: 'UPDATE_SHAKE_DATA'; payload: { userId: string; shakeCount: number } }
+  | { type: 'BATCH_SHAKE_DATA'; payload: Array<{ userId: string; shakeCount: number }> }
   | { type: 'SET_LOTTERY_STATUS'; payload: LotteryStatus }
   | { type: 'SET_COUNTDOWN'; payload: number }
   | { type: 'DECREMENT_COUNTDOWN' }
@@ -72,6 +73,20 @@ function lotteryReducer(state: LotteryState, action: LotteryAction): LotteryStat
     case 'UPDATE_SHAKE_DATA': {
       const newShakeData = new Map(state.shakeData);
       newShakeData.set(action.payload.userId, action.payload.shakeCount);
+      return {
+        ...state,
+        shakeData: newShakeData,
+      };
+    }
+
+    case 'BATCH_SHAKE_DATA': {
+      if (action.payload.length === 0) {
+        return state;
+      }
+      const newShakeData = new Map(state.shakeData);
+      for (const { userId, shakeCount } of action.payload) {
+        newShakeData.set(userId, shakeCount);
+      }
       return {
         ...state,
         shakeData: newShakeData,

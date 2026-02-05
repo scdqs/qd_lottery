@@ -56,7 +56,17 @@ const AuthPage: React.FC<AuthPageProps> = ({ sessionId, onAuthSuccess }) => {
     if (userInfoBase64) {
       // 解析 base64 编码的用户信息
       try {
-        const userInfoJson = atob(userInfoBase64);
+        const normalizedBase64 = (() => {
+          const withPlus = userInfoBase64.replace(/ /g, '+');
+          const base64 = withPlus.replace(/-/g, '+').replace(/_/g, '/');
+          const padding = base64.length % 4 === 0 ? '' : '='.repeat(4 - (base64.length % 4));
+          return base64 + padding;
+        })();
+        const binaryStr = atob(normalizedBase64);
+        const bytes = Uint8Array.from(binaryStr, (char) => char.charCodeAt(0));
+        const userInfoJson = typeof TextDecoder !== 'undefined'
+          ? new TextDecoder('utf-8').decode(bytes)
+          : decodeURIComponent(escape(binaryStr));
         const userInfo: WeChatUserInfo = JSON.parse(userInfoJson);
 
         // 验证用户信息完整性

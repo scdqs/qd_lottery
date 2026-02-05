@@ -69,7 +69,13 @@ export interface ClientEvents {
  * WebSocket服务器事件
  */
 export interface ServerEvents {
-  'session-joined': (data: { success: boolean; message?: string }) => void;
+  'session-joined': (data: {
+    success: boolean;
+    message?: string;
+    sessionStatus?: 'waiting' | 'running' | 'finished';
+    lotteryStartTime?: number;
+    lotteryDuration?: number;
+  }) => void;
   'participant-joined': (data: { participant: Participant }) => void;
   'lottery-started': (data: { duration: number; startTime: number }) => void;
   'lottery-stopped': () => void;

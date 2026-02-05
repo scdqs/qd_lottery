@@ -28,7 +28,13 @@ export interface ClientToServerEvents {
  * 服务器到客户端的事件
  */
 export interface ServerToClientEvents {
-  'session-joined': (data: { success: boolean; message?: string }) => void;
+  'session-joined': (data: {
+    success: boolean;
+    message?: string;
+    sessionStatus?: 'waiting' | 'running' | 'finished';
+    lotteryStartTime?: number;
+    lotteryDuration?: number;
+  }) => void;
   'participant-joined': (data: { participant: Participant }) => void;
   'lottery-started': (data: { duration: number; startTime: number }) => void;
   'lottery-stopped': () => void;
@@ -149,10 +155,15 @@ function handleJoinSession(
       sessionManager.addH5Client(sessionId, socket.id);
     }
 
-    // 发送成功响应
-    socket.emit('session-joined', { success: true });
+    // 发送成功响应，包含会话状态信息（用于处理中途加入的情况）
+    socket.emit('session-joined', {
+      success: true,
+      sessionStatus: session.status,
+      lotteryStartTime: session.lotteryStartTime,
+      lotteryDuration: session.lotteryDuration,
+    });
 
-    console.log('Client joined session:', { socketId: socket.id, clientType, sessionId });
+    console.log('Client joined session:', { socketId: socket.id, clientType, sessionId, sessionStatus: session.status });
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     socket.emit('session-joined', {
@@ -236,14 +247,17 @@ function handleStartLottery(
       return;
     }
 
+    // 记录开始时间和时长
+    const startTime = Date.now();
+    sessionManager.setLotteryTime(sessionId, startTime, duration);
+
     // 更新会话状态为运行中
     sessionManager.updateSessionStatus(sessionId, 'running');
 
     // 向该会话的所有客户端广播开始抽奖事件
-    const startTime = Date.now();
     io.to(sessionId).emit('lottery-started', { duration, startTime });
 
-    console.log('Lottery started in session:', { sessionId, duration });
+    console.log('Lottery started in session:', { sessionId, duration, startTime });
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     socket.emit('error', { message: errorMessage });
@@ -318,10 +332,15 @@ function handleShakeData(
     // 更新摇动数据
     sessionManager.updateShakeData(sessionId, userId, shakeCount);
 
-    // 向该会话的所有客户端广播摇动数据更新
-    io.to(sessionId).emit('shake-update', { userId, shakeCount });
+    // 只向Web端发送摇动数据更新（优化：避免向所有H5客户端广播，减少消息量）
+    if (session.webClient) {
+      io.to(session.webClient).emit('shake-update', { userId, shakeCount });
+    }
 
-    console.log('Shake data updated:', { sessionId, userId, shakeCount });
+    // 减少日志输出频率，只在每10次摇动时打印一次
+    if (shakeCount % 10 === 0) {
+      console.log('Shake data updated:', { sessionId, userId, shakeCount });
+    }
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     socket.emit('error', { message: errorMessage });

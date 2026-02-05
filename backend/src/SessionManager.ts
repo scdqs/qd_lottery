@@ -273,4 +273,20 @@ export class SessionManager {
 
     session.h5Clients.delete(socketId);
   }
+
+  /**
+   * 设置抽奖开始时间和时长
+   * @param sessionId 会话ID
+   * @param startTime 开始时间戳
+   * @param duration 抽奖时长（秒）
+   */
+  setLotteryTime(sessionId: string, startTime: number, duration: number): void {
+    const session = this.sessions.get(sessionId);
+    if (!session) {
+      throw new Error(`Session ${sessionId} not found`);
+    }
+
+    session.lotteryStartTime = startTime;
+    session.lotteryDuration = duration;
+  }
 }

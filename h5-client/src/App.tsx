@@ -77,16 +77,30 @@ function AppContent() {
       await client.connect();
       showSuccess('连接成功！');
 
-      // 加入会话
-      client.joinSession(sessionId);
-
       // 监听会话加入结果
       client.onSessionJoined((data) => {
         if (data.success) {
-          console.log('Successfully joined session');
+          console.log('Successfully joined session, status:', data.sessionStatus);
           // 发送用户信息到服务器（任务14.2）
           client.sendUserInfo(sessionId, userInfo);
           showSuccess('已加入抽奖！');
+
+          // 检查会话状态，如果抽奖已经开始，自动进入摇一摇状态
+          if (data.sessionStatus === 'running') {
+            console.log('Lottery already running, auto-starting shake');
+            setShakeStatus('shaking');
+            showSuccess('抽奖进行中！开始摇动手机吧！', 3000);
+            // 使用setTimeout确保ShakePage已挂载
+            setTimeout(() => {
+              if ((window as any).__shakePageMethods) {
+                (window as any).__shakePageMethods.startShaking();
+              }
+            }, 500);
+          } else if (data.sessionStatus === 'finished') {
+            console.log('Lottery already finished');
+            setShakeStatus('stopped');
+            showInfo('抽奖已结束', 3000);
+          }
         } else {
           const errorMsg = data.message || '加入会话失败';
           setErrorMessage(errorMsg);
@@ -138,6 +152,9 @@ function AppContent() {
           }
         }
       });
+
+      // 加入会话（确保先注册监听，避免错过session-joined）
+      client.joinSession(sessionId);
 
     } catch (error) {
       console.error('Failed to connect to WebSocket:', error);
