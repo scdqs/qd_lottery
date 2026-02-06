@@ -292,28 +292,13 @@ const AuthPage: React.FC<AuthPageProps> = ({ sessionId, onAuthSuccess }) => {
             <p className="auth-description">
               需要获取您的微信信息才能参与抽奖
             </p>
-            <button 
+            <button
               className="auth-button primary"
               onClick={requestWeChatAuth}
               disabled={isProcessing}
             >
               微信授权并参与
             </button>
-            
-            <div className="divider">
-              <span>或</span>
-            </div>
-
-            <button 
-              className="auth-button secondary"
-              onClick={() => setTestMode(true)}
-            >
-              使用测试模式
-            </button>
-            
-            <p className="hint-text">
-              💡 测试模式无需微信授权，适合快速体验
-            </p>
           </div>
         );
 

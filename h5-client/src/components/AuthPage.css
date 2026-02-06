@@ -3,8 +3,24 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #1a365d 0%, #2c5282 50%, #2b6cb0 100%);
   padding: 20px;
+  position: relative;
+}
+
+/* 节日感背景装饰 - 金色光点 */
+.auth-page::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background:
+    radial-gradient(circle at 10% 20%, rgba(246, 224, 94, 0.15) 0%, transparent 25%),
+    radial-gradient(circle at 90% 80%, rgba(246, 224, 94, 0.15) 0%, transparent 25%),
+    radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.05) 0%, transparent 50%);
+  pointer-events: none;
 }
 
 .auth-container {
@@ -13,8 +29,10 @@
   padding: 40px 30px;
   max-width: 400px;
   width: 100%;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
   text-align: center;
+  position: relative;
+  z-index: 1;
 }
 
 .auth-content {
@@ -31,13 +49,13 @@
 }
 
 .auth-icon.success {
-  color: #10b981;
+  color: #48bb78;
   font-size: 72px;
   animation: scaleIn 0.5s ease-out;
 }
 
 .auth-icon.error {
-  color: #ef4444;
+  color: #f56565;
   font-size: 72px;
   animation: shake 0.5s ease-out;
 }
@@ -45,19 +63,19 @@
 .auth-content h2 {
   font-size: 24px;
   font-weight: 600;
-  color: #1f2937;
+  color: #2d3748;
   margin: 0;
 }
 
 .auth-description {
   font-size: 16px;
-  color: #6b7280;
+  color: #718096;
   line-height: 1.5;
   margin: 0;
 }
 
 .auth-description.error {
-  color: #ef4444;
+  color: #f56565;
 }
 
 .auth-button {
@@ -73,13 +91,13 @@
 }
 
 .auth-button.primary {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #2c5282 0%, #4299e1 100%);
   color: white;
 }
 
 .auth-button.primary:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 5px 20px rgba(44, 82, 130, 0.4);
 }
 
 .auth-button.primary:active:not(:disabled) {
@@ -87,12 +105,12 @@
 }
 
 .auth-button.secondary {
-  background: #f3f4f6;
-  color: #374151;
+  background: #f7fafc;
+  color: #2d3748;
 }
 
 .auth-button.secondary:hover:not(:disabled) {
-  background: #e5e7eb;
+  background: #edf2f7;
 }
 
 .auth-button:disabled {
@@ -110,8 +128,8 @@
 .spinner {
   width: 48px;
   height: 48px;
-  border: 4px solid #f3f4f6;
-  border-top-color: #667eea;
+  border: 4px solid #edf2f7;
+  border-top-color: #2c5282;
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
@@ -196,7 +214,7 @@
   display: block;
   font-size: 14px;
   font-weight: 500;
-  color: #374151;
+  color: #2d3748;
   margin-bottom: 6px;
 }
 
@@ -204,7 +222,7 @@
   width: 100%;
   padding: 12px 14px;
   font-size: 15px;
-  border: 2px solid #e5e7eb;
+  border: 2px solid #e2e8f0;
   border-radius: 8px;
   transition: all 0.3s ease;
   box-sizing: border-box;
@@ -212,16 +230,16 @@
 
 .test-input:focus {
   outline: none;
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  border-color: #4299e1;
+  box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.15);
 }
 
 .test-input::placeholder {
-  color: #9ca3af;
+  color: #a0aec0;
 }
 
 .error-text {
-  color: #ef4444;
+  color: #f56565;
   font-size: 14px;
   margin: 0;
   text-align: left;
@@ -229,14 +247,14 @@
 
 .auth-button.link {
   background: transparent;
-  color: #667eea;
+  color: #2c5282;
   padding: 10px;
   font-size: 14px;
   margin-top: 0;
 }
 
 .auth-button.link:hover {
-  background: #f3f4f6;
+  background: #f7fafc;
 }
 
 .divider {
@@ -251,18 +269,18 @@
   content: '';
   flex: 1;
   height: 1px;
-  background: #e5e7eb;
+  background: #e2e8f0;
 }
 
 .divider span {
   padding: 0 15px;
-  color: #9ca3af;
+  color: #a0aec0;
   font-size: 14px;
 }
 
 .hint-text {
   font-size: 13px;
-  color: #9ca3af;
+  color: #a0aec0;
   margin: 5px 0 0 0;
   line-height: 1.4;
 }

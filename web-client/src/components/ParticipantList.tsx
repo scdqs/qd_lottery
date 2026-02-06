@@ -39,12 +39,12 @@ export function ParticipantList({ participants }: ParticipantListProps) {
             data-testid={`participant-${participant.userId}`}
           >
             <img
-              src={participant.avatarUrl}
+              src={participant.avatarUrl || '/head.png'}
               alt={`${participant.nickname}的头像`}
               className="participant-avatar"
               onError={(e) => {
                 // 头像加载失败时使用默认头像
-                (e.target as HTMLImageElement).src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48"%3E%3Ccircle cx="24" cy="24" r="24" fill="%23ccc"/%3E%3Ctext x="24" y="30" font-size="20" text-anchor="middle" fill="%23fff"%3E?%3C/text%3E%3C/svg%3E';
+                (e.target as HTMLImageElement).src = '/head.png';
               }}
             />
             <div className="participant-info">

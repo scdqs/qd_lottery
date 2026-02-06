@@ -1,4 +1,4 @@
-// 公司抽奖系统H5端类型定义
+// 趣点摇一摇H5端类型定义
 
 /**
  * 微信用户信息
@@ -34,7 +34,7 @@ export interface ShakeData {
  * 中奖者信息
  */
 export interface Winner {
-  rank: 1 | 2 | 3;         // 名次
+  rank: number;            // 名次
   userId: string;          // 用户ID
   nickname: string;        // 昵称
   avatarUrl: string;       // 头像URL

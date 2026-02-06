@@ -37,7 +37,7 @@ export interface Session {
  * 中奖者信息
  */
 export interface Winner {
-  rank: 1 | 2 | 3;         // 名次
+  rank: number;              // 名次
   userId: string;          // 用户ID
   nickname: string;        // 昵称
   avatarUrl: string;       // 头像URL

@@ -165,11 +165,12 @@ export class SessionManager {
 
   /**
    * 计算中奖者
-   * 根据摇动次数选出前三名（如果参与者少于三人，则为实际人数）
+   * 根据摇动次数选出指定数量的中奖者（如果参与者少于指定人数，则为实际人数）
    * @param sessionId 会话ID
+   * @param winnerCount 中奖人数，默认为3
    * @returns 中奖者数组，按名次排序
    */
-  calculateWinners(sessionId: string): Winner[] {
+  calculateWinners(sessionId: string, winnerCount: number = 3): Winner[] {
     const session = this.sessions.get(sessionId);
     if (!session) {
       throw new Error(`Session ${sessionId} not found`);
@@ -186,14 +187,14 @@ export class SessionManager {
     // 按摇动次数降序排序
     participantsWithShakes.sort((a, b) => b.shakeCount - a.shakeCount);
 
-    // 选出前三名（或实际人数）
-    const winnerCount = Math.min(3, participantsWithShakes.length);
+    // 选出指定数量的中奖者（或实际人数）
+    const actualWinnerCount = Math.min(winnerCount, participantsWithShakes.length);
     const winners: Winner[] = [];
 
-    for (let i = 0; i < winnerCount; i++) {
+    for (let i = 0; i < actualWinnerCount; i++) {
       const { participant, shakeCount } = participantsWithShakes[i];
       winners.push({
-        rank: (i + 1) as 1 | 2 | 3,
+        rank: i + 1,
         userId: participant.userId,
         nickname: participant.nickname,
         avatarUrl: participant.avatarUrl,

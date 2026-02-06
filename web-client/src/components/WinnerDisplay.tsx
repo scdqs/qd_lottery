@@ -15,21 +15,19 @@ export function WinnerDisplay({ winners }: WinnerDisplayProps) {
     return null;
   }
 
-  // 获取名次标识
-  const getRankLabel = (rank: 1 | 2 | 3): string => {
-    switch (rank) {
-      case 1:
-        return '🥇 第一名';
-      case 2:
-        return '🥈 第二名';
-      case 3:
-        return '🥉 第三名';
-    }
+  // 获取名次标识（支持任意名次）
+  const getRankLabel = (rank: number): string => {
+    const medals = ['', '🥇', '🥈', '🥉'];
+    const medal = medals[rank] || '🏆';
+    return `${medal} 第${rank}名`;
   };
 
-  // 获取名次样式类
-  const getRankClass = (rank: 1 | 2 | 3): string => {
-    return `winner-card rank-${rank}`;
+  // 获取名次样式类（前3名特殊样式，其余通用样式）
+  const getRankClass = (rank: number): string => {
+    if (rank <= 3) {
+      return `winner-card rank-${rank}`;
+    }
+    return 'winner-card rank-other';
   };
 
   return (
@@ -37,8 +35,8 @@ export function WinnerDisplay({ winners }: WinnerDisplayProps) {
       <h2 className="winner-title">🎉 中奖名单 🎉</h2>
       <div className="winners-container">
         {winners.map((winner, index) => (
-          <div 
-            key={winner.userId} 
+          <div
+            key={winner.userId}
             className={getRankClass(winner.rank)}
             style={{ animationDelay: `${index * 0.2}s` }}
           >
@@ -47,9 +45,12 @@ export function WinnerDisplay({ winners }: WinnerDisplayProps) {
             </div>
             <div className="winner-avatar-container">
               <img
-                src={winner.avatarUrl}
+                src={winner.avatarUrl || '/head.png'}
                 alt={winner.nickname}
                 className="winner-avatar"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src = '/head.png';
+                }}
               />
             </div>
             <div className="winner-info">

@@ -19,8 +19,8 @@ export type ClientType = 'web' | 'h5';
 export interface ClientToServerEvents {
   'join-session': (data: { sessionId: string; clientType: ClientType }) => void;
   'user-authorized': (data: { sessionId: string; userInfo: WeChatUserInfo }) => void;
-  'start-lottery': (data: { sessionId: string; duration: number }) => void;
-  'stop-lottery': (data: { sessionId: string }) => void;
+  'start-lottery': (data: { sessionId: string; duration: number; winnerCount?: number }) => void;
+  'stop-lottery': (data: { sessionId: string; winnerCount?: number }) => void;
   'shake-data': (data: { sessionId: string; userId: string; shakeCount: number }) => void;
 }
 
@@ -272,9 +272,9 @@ function handleStopLottery(
   socket: Socket<ClientToServerEvents, ServerToClientEvents, {}, SocketData>,
   sessionManager: SessionManager,
   io: SocketIOServer<ClientToServerEvents, ServerToClientEvents, {}, SocketData>,
-  data: { sessionId: string }
+  data: { sessionId: string; winnerCount?: number }
 ): void {
-  const { sessionId } = data;
+  const { sessionId, winnerCount = 3 } = data;
 
   try {
     // 验证会话是否存在
@@ -299,8 +299,8 @@ function handleStopLottery(
     // 等待短暂时间，接收可能在途的最后摇动数据
     setTimeout(() => {
       try {
-        // 计算中奖者
-        const winners = sessionManager.calculateWinners(sessionId);
+        // 计算中奖者（使用传入的中奖人数）
+        const winners = sessionManager.calculateWinners(sessionId, winnerCount);
         const finalShakeData = Object.fromEntries(
           sessionManager.getAllShakeData(sessionId)
         );
@@ -308,7 +308,7 @@ function handleStopLottery(
         // 向该会话的所有客户端广播中奖结果和最终计数
         io.to(sessionId).emit('lottery-result', { winners, finalShakeData });
 
-        console.log('Lottery stopped in session:', { sessionId, winners });
+        console.log('Lottery stopped in session:', { sessionId, winnerCount, winners });
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'Unknown error';
         socket.emit('error', { message: errorMessage });

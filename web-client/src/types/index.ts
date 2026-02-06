@@ -1,5 +1,5 @@
 /**
- * 公司抽奖系统 - Web端类型定义
+ * 趣点摇一摇 - Web端类型定义
  */
 
 // 参与者信息
@@ -20,7 +20,7 @@ export interface ShakeData {
 
 // 中奖者
 export interface Winner {
-  rank: 1 | 2 | 3;         // 名次
+  rank: number;            // 名次
   userId: string;          // 用户ID
   nickname: string;        // 昵称
   avatarUrl: string;       // 头像URL
@@ -58,8 +58,8 @@ export interface SessionInfo {
 export interface ClientToServerEvents {
   'join-session': (data: { sessionId: string; clientType: 'web' | 'h5' }) => void;
   'user-authorized': (data: { sessionId: string; userInfo: WeChatUserInfo }) => void;
-  'start-lottery': (data: { sessionId: string; duration: number }) => void;
-  'stop-lottery': (data: { sessionId: string }) => void;
+  'start-lottery': (data: { sessionId: string; duration: number; winnerCount?: number }) => void;
+  'stop-lottery': (data: { sessionId: string; winnerCount?: number }) => void;
   'shake-data': (data: { sessionId: string; userId: string; shakeCount: number }) => void;
 }
 

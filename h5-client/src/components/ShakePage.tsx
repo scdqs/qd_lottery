@@ -41,7 +41,6 @@ const ShakePage: React.FC<ShakePageProps> = ({
   const [sensorSupported, setSensorSupported] = useState(true);
   const [permissionRequested, setPermissionRequested] = useState(false);
   const [needsPermission, setNeedsPermission] = useState(false);
-  const [testMode, setTestMode] = useState(false); // 测试模式：使用按钮代替摇动
   const lastSendTimeRef = useRef<number>(0);
   const pendingCountRef = useRef<number | null>(null);
   const latestShakeCountRef = useRef<number>(0);
@@ -125,29 +124,6 @@ const ShakePage: React.FC<ShakePageProps> = ({
   }, [shakeCount]);
 
   /**
-   * 测试模式：手动增加摇动次数
-   */
-  const handleManualShake = () => {
-    if (shakeStatus !== 'shaking') {
-      return;
-    }
-    
-    const newCount = shakeCount + 1;
-    latestShakeCountRef.current = newCount;
-    setShakeCount(newCount);
-    throttledSendShakeData(newCount);
-  };
-
-  /**
-   * 切换到测试模式
-   */
-  const enableTestMode = () => {
-    setTestMode(true);
-    setSensorSupported(true); // 允许继续使用
-    setErrorMessage(null);
-  };
-
-  /**
    * 请求传感器权限
    */
   const requestSensorPermission = async () => {
@@ -178,12 +154,6 @@ const ShakePage: React.FC<ShakePageProps> = ({
    * 需求: 5.2 - 接收开始指令后启动传感器监听
    */
   const startShaking = async () => {
-    // 如果是测试模式，不需要启动传感器
-    if (testMode) {
-      setShakeStatus('shaking');
-      return;
-    }
-
     if (!sensorRef.current || !sensorSupported) {
       return;
     }
@@ -193,7 +163,7 @@ const ShakePage: React.FC<ShakePageProps> = ({
       sensorRef.current.reset();
       lastSendTimeRef.current = 0; // 重置发送时间
       pendingCountRef.current = null; // 清空待发送数据
-      
+
       // 启动传感器监听（异步，可能需要请求权限）
       await sensorRef.current.start((count) => {
         latestShakeCountRef.current = count;
@@ -203,15 +173,14 @@ const ShakePage: React.FC<ShakePageProps> = ({
     } catch (error) {
       console.error('Failed to start shake sensor:', error);
       const errorMsg = error instanceof Error ? error.message : '启动传感器失败';
-      
+
       if (errorMsg.includes('permission')) {
         setErrorMessage('需要授权访问传感器，请在浏览器设置中允许访问运动传感器');
       } else {
-        setErrorMessage('启动传感器失败，请尝试使用"按钮模式"');
+        setErrorMessage('启动传感器失败，请确保使用HTTPS访问');
       }
-      
+
       setShakeStatus('waiting');
-      // 不要设置 setSensorSupported(false)，让用户可以选择测试模式
     }
   };
 
@@ -303,25 +272,14 @@ const ShakePage: React.FC<ShakePageProps> = ({
         <span className="count-label">次</span>
       </div>
       <p className="shake-description">
-        {testMode ? '点击下方按钮增加次数' : '用力摇动手机，冲击前三名！'}
+        用力摇动手机，争取好名次！
       </p>
-      
-      {testMode && (
-        <button 
-          className="manual-shake-button"
-          onClick={handleManualShake}
-        >
-          点击摇一摇 +1
-        </button>
-      )}
-      
-      {!testMode && (
-        <div className="shake-animation">
-          <div className="wave wave-1"></div>
-          <div className="wave wave-2"></div>
-          <div className="wave wave-3"></div>
-        </div>
-      )}
+
+      <div className="shake-animation">
+        <div className="wave wave-1"></div>
+        <div className="wave wave-2"></div>
+        <div className="wave wave-3"></div>
+      </div>
     </div>
   );
 
@@ -350,14 +308,19 @@ const ShakePage: React.FC<ShakePageProps> = ({
    */
   const renderResultState = () => {
     if (isWinner && rank) {
-      const rankLabels = ['', '🥇 一等奖', '🥈 二等奖', '🥉 三等奖'];
+      // 动态生成名次标签
+      const getRankLabel = (r: number) => {
+        const medals = ['', '🥇', '🥈', '🥉'];
+        const medal = medals[r] || '🏆';
+        return `${medal} 第${r}名`;
+      };
       return (
         <div className="shake-page-content result-winner">
           <div className="winner-badge">
             <span className="badge-icon">🎉</span>
           </div>
           <h2 className="result-title">恭喜中奖！</h2>
-          <div className="winner-rank">{rankLabels[rank]}</div>
+          <div className="winner-rank">{getRankLabel(rank)}</div>
           <div className="shake-count-display">
             <span className="count-number">{shakeCount}</span>
             <span className="count-label">次</span>
@@ -399,17 +362,9 @@ const ShakePage: React.FC<ShakePageProps> = ({
       <p className="error-hint">
         可能原因：浏览器需要HTTPS或localhost访问传感器
       </p>
-      
-      <button 
-        className="permission-button"
-        onClick={enableTestMode}
-      >
-        使用按钮模式
-      </button>
-      
       <div className="shake-tips">
-        <p>💡 按钮模式：点击按钮代替摇动</p>
-        <p>💡 功能完全相同，只是操作方式不同</p>
+        <p>💡 请确保使用HTTPS协议访问</p>
+        <p>💡 或尝试使用其他浏览器</p>
       </div>
     </div>
   );

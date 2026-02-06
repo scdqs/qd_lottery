@@ -31,6 +31,7 @@ export function MainPage() {
   const [wsClient, setWsClient] = useState<WebSocketClient | null>(null);
   const [qrCodeUrl, setQrCodeUrl] = useState<string>('');
   const [duration, setDuration] = useState<number>(60); // 默认60秒
+  const [winnerCount, setWinnerCount] = useState<number>(3); // 默认3人中奖
   const [isCreatingSession, setIsCreatingSession] = useState(false);
   const [connectionStatus, setConnectionStatus] = useState<string>('disconnected');
   const pendingShakeUpdatesRef = useRef<Map<string, number>>(new Map());
@@ -191,12 +192,13 @@ export function MainPage() {
       if (wsClient && state.sessionInfo) {
         wsClient.getSocket()?.emit('stop-lottery', {
           sessionId: state.sessionInfo.sessionId,
+          winnerCount: winnerCount,
         });
         showInfo('抽奖已结束，正在计算结果...');
         // 状态更新将由lottery-result事件触发
       }
     }
-  }, [state.lotteryStatus, state.countdown, wsClient, state.sessionInfo, dispatch, showInfo]);
+  }, [state.lotteryStatus, state.countdown, wsClient, state.sessionInfo, dispatch, showInfo, winnerCount]);
 
   // 清理WebSocket连接
   useEffect(() => {
@@ -266,7 +268,7 @@ export function MainPage() {
       )}
 
       <header className="main-header">
-        <h1>公司抽奖系统</h1>
+        <h1>趣点摇一摇</h1>
         <div className="status-bar">
           <span className="status-label">状态:</span>
           <span className={`status-value status-${state.lotteryStatus}`}>
@@ -307,9 +309,9 @@ export function MainPage() {
               </div>
             </section>
 
-            {/* 抽奖控制区域 */}
+            {/* 抽奖结果区域 */}
             <section className="lottery-control-section">
-              <h2>抽奖控制</h2>
+              <h2>抽奖结果</h2>
               
               {/* 倒计时配置 */}
               {state.lotteryStatus === 'waiting' && (
@@ -322,6 +324,22 @@ export function MainPage() {
                     max="300"
                     value={duration}
                     onChange={(e) => setDuration(Number(e.target.value))}
+                    className="duration-input"
+                  />
+                </div>
+              )}
+
+              {/* 中奖人数配置 */}
+              {state.lotteryStatus === 'waiting' && (
+                <div className="duration-config">
+                  <label htmlFor="winnerCount">中奖人数:</label>
+                  <input
+                    id="winnerCount"
+                    type="number"
+                    min="1"
+                    max="100"
+                    value={winnerCount}
+                    onChange={(e) => setWinnerCount(Number(e.target.value))}
                     className="duration-input"
                   />
                 </div>
@@ -357,21 +375,19 @@ export function MainPage() {
               <section className="participants-preview">
                 <h3>参与者 ({state.participants.length})</h3>
                 <div className="participants-grid">
-                  {state.participants.slice(0, 12).map((participant) => (
+                  {state.participants.map((participant) => (
                     <div key={participant.userId} className="participant-card">
                       <img
-                        src={participant.avatarUrl}
+                        src={participant.avatarUrl || '/head.png'}
                         alt={participant.nickname}
                         className="participant-avatar"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).src = '/head.png';
+                        }}
                       />
                       <p className="participant-nickname">{participant.nickname}</p>
                     </div>
                   ))}
-                  {state.participants.length > 12 && (
-                    <div className="participant-card more">
-                      <p>+{state.participants.length - 12} 更多</p>
-                    </div>
-                  )}
                 </div>
               </section>
             )}

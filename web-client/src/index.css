@@ -1,5 +1,6 @@
 /**
- * 公司抽奖系统 - Web端全局样式
+ * 趣点摇一摇 - Web端全局样式
+ * 配色方案：深蓝渐变背景 + 金色强调色
  */
 
 * {
@@ -8,17 +9,63 @@
   box-sizing: border-box;
 }
 
+:root {
+  /* 主色调 - 深蓝色系 */
+  --primary-gradient: linear-gradient(135deg, #1a365d 0%, #2c5282 50%, #2b6cb0 100%);
+  --primary-dark: #1a365d;
+  --primary: #2c5282;
+  --primary-light: #4299e1;
+
+  /* 强调色 - 金色 */
+  --accent-gold: #f6e05e;
+  --accent-gold-light: #faf089;
+
+  /* 功能色 */
+  --success: #48bb78;
+  --warning: #ed8936;
+  --error: #f56565;
+  --info: #4299e1;
+
+  /* 中性色 */
+  --text-primary: #2d3748;
+  --text-secondary: #718096;
+  --text-muted: #a0aec0;
+  --bg-white: #ffffff;
+  --bg-gray: #f7fafc;
+  --border-color: #e2e8f0;
+}
+
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #f5f5f5;
+  background: var(--primary-gradient);
+  min-height: 100vh;
+  position: relative;
+}
+
+/* 节日感背景装饰 - 金色光点 */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background:
+    radial-gradient(circle at 10% 20%, rgba(246, 224, 94, 0.12) 0%, transparent 20%),
+    radial-gradient(circle at 90% 80%, rgba(246, 224, 94, 0.12) 0%, transparent 20%),
+    radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.05) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
 }
 
 #root {
   min-height: 100vh;
+  position: relative;
+  z-index: 1;
 }
 
 .app {
@@ -42,9 +89,11 @@ body {
 }
 
 .main-header h1 {
-  color: #333;
+  color: var(--accent-gold);
   font-size: 2.5rem;
   margin-bottom: 15px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  font-weight: 700;
 }
 
 .status-bar {
@@ -56,7 +105,7 @@ body {
 }
 
 .status-label {
-  color: #666;
+  color: rgba(255, 255, 255, 0.8);
   font-weight: 500;
 }
 
@@ -67,27 +116,27 @@ body {
 }
 
 .status-idle {
-  background-color: #f0f0f0;
-  color: #666;
+  background-color: rgba(255, 255, 255, 0.9);
+  color: var(--text-secondary);
 }
 
 .status-waiting {
-  background-color: #e6f7ff;
-  color: #1890ff;
+  background-color: #ebf8ff;
+  color: var(--primary);
 }
 
 .status-running {
-  background-color: #f6ffed;
-  color: #52c41a;
+  background-color: #f0fff4;
+  color: var(--success);
 }
 
 .status-finished {
-  background-color: #fff7e6;
-  color: #fa8c16;
+  background-color: #fffaf0;
+  color: var(--warning);
 }
 
 .connection-status {
-  color: #999;
+  color: rgba(255, 255, 255, 0.7);
   font-size: 0.9rem;
   margin-left: 10px;
 }
@@ -108,17 +157,18 @@ body {
 
 /* 二维码区域 */
 .qrcode-section {
-  background: white;
-  border-radius: 8px;
+  background: var(--bg-white);
+  border-radius: 12px;
   padding: 30px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
   text-align: center;
 }
 
 .qrcode-section h2 {
-  color: #333;
+  color: var(--text-primary);
   margin-bottom: 20px;
   font-size: 1.5rem;
+  font-weight: 600;
 }
 
 .qrcode-container {
@@ -131,20 +181,20 @@ body {
 .qrcode-image {
   width: 250px;
   height: 250px;
-  border: 2px solid #e8e8e8;
-  border-radius: 8px;
+  border: 2px solid var(--border-color);
+  border-radius: 12px;
   padding: 10px;
   background: white;
 }
 
 .qrcode-hint {
-  color: #666;
+  color: var(--text-secondary);
   margin-top: 10px;
   font-size: 0.9rem;
 }
 
 .session-info {
-  color: #666;
+  color: var(--text-secondary);
   font-size: 0.95rem;
 }
 
@@ -154,17 +204,18 @@ body {
 
 /* 抽奖控制区域 */
 .lottery-control-section {
-  background: white;
-  border-radius: 8px;
+  background: var(--bg-white);
+  border-radius: 12px;
   padding: 30px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
   text-align: center;
 }
 
 .lottery-control-section h2 {
-  color: #333;
+  color: var(--text-primary);
   margin-bottom: 20px;
   font-size: 1.5rem;
+  font-weight: 600;
 }
 
 .duration-config {
@@ -176,16 +227,22 @@ body {
 }
 
 .duration-config label {
-  color: #666;
+  color: var(--text-secondary);
   font-weight: 500;
 }
 
 .duration-input {
   width: 100px;
   padding: 8px 12px;
-  border: 1px solid #d9d9d9;
-  border-radius: 4px;
+  border: 2px solid var(--border-color);
+  border-radius: 8px;
   font-size: 1rem;
+  transition: border-color 0.2s;
+}
+
+.duration-input:focus {
+  outline: none;
+  border-color: var(--primary-light);
 }
 
 .countdown-display {
@@ -193,7 +250,7 @@ body {
 }
 
 .countdown-display h3 {
-  color: #666;
+  color: var(--text-secondary);
   margin-bottom: 10px;
   font-size: 1.2rem;
 }
@@ -201,7 +258,7 @@ body {
 .countdown-timer {
   font-size: 4rem;
   font-weight: 700;
-  color: #52c41a;
+  color: var(--primary);
   margin: 20px 0;
 }
 
@@ -211,7 +268,7 @@ body {
 }
 
 .winners-section h3 {
-  color: #333;
+  color: var(--text-primary);
   margin-bottom: 20px;
   font-size: 1.3rem;
 }
@@ -227,24 +284,24 @@ body {
   align-items: center;
   gap: 15px;
   padding: 15px;
-  border-radius: 8px;
-  background: #f9f9f9;
+  border-radius: 10px;
+  background: var(--bg-gray);
   border: 2px solid transparent;
 }
 
 .winner-item.rank-1 {
-  background: #fff7e6;
-  border-color: #ffd666;
+  background: linear-gradient(135deg, #fffaf0 0%, #feebc8 100%);
+  border-color: #f6e05e;
 }
 
 .winner-item.rank-2 {
-  background: #f0f0f0;
-  border-color: #bfbfbf;
+  background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+  border-color: #cbd5e0;
 }
 
 .winner-item.rank-3 {
-  background: #fff1f0;
-  border-color: #ffccc7;
+  background: linear-gradient(135deg, #fffaf0 0%, #fbd38d 20%, #ffffff 100%);
+  border-color: #ed8936;
 }
 
 .winner-rank {
@@ -267,27 +324,28 @@ body {
 
 .winner-nickname {
   font-weight: 600;
-  color: #333;
+  color: var(--text-primary);
   margin-bottom: 5px;
 }
 
 .winner-shake-count {
-  color: #666;
+  color: var(--text-secondary);
   font-size: 0.9rem;
 }
 
 /* 参与者预览区域 */
 .participants-preview {
-  background: white;
-  border-radius: 8px;
+  background: var(--bg-white);
+  border-radius: 12px;
   padding: 20px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
 }
 
 .participants-preview h3 {
-  color: #333;
+  color: var(--text-primary);
   margin-bottom: 15px;
   font-size: 1.2rem;
+  font-weight: 600;
 }
 
 .participants-grid {
@@ -300,20 +358,22 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 10px;
-  border-radius: 8px;
-  background: #fafafa;
-  transition: transform 0.2s;
+  padding: 12px;
+  border-radius: 10px;
+  background: var(--bg-gray);
+  transition: all 0.2s ease;
+  border: 1px solid var(--border-color);
 }
 
 .participant-card:hover {
   transform: translateY(-2px);
-  background: #f0f0f0;
+  background: #edf2f7;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .participant-card.more {
   justify-content: center;
-  color: #999;
+  color: var(--text-muted);
   font-weight: 500;
 }
 
@@ -323,11 +383,12 @@ body {
   border-radius: 50%;
   object-fit: cover;
   margin-bottom: 8px;
+  border: 2px solid var(--border-color);
 }
 
 .participant-nickname {
   font-size: 0.85rem;
-  color: #666;
+  color: var(--text-secondary);
   text-align: center;
   word-break: break-word;
   max-width: 100%;
@@ -335,23 +396,24 @@ body {
 
 /* 参与者列表样式 */
 .participant-list {
-  background: white;
-  border-radius: 8px;
+  background: var(--bg-white);
+  border-radius: 12px;
   padding: 20px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
   margin-bottom: 20px;
 }
 
 .participant-list h2 {
-  color: #333;
+  color: var(--text-primary);
   margin-bottom: 15px;
   font-size: 1.5rem;
+  font-weight: 600;
 }
 
 .participant-list-empty {
   text-align: center;
   padding: 40px 20px;
-  color: #999;
+  color: var(--text-muted);
 }
 
 .participant-list-empty p {
@@ -360,7 +422,7 @@ body {
 
 .participant-list-empty .hint {
   font-size: 0.9rem;
-  color: #bbb;
+  color: var(--text-muted);
 }
 
 .participant-list-container {
@@ -377,18 +439,18 @@ body {
   align-items: center;
   gap: 12px;
   padding: 12px;
-  border-radius: 8px;
-  background: #fafafa;
-  border: 1px solid #f0f0f0;
+  border-radius: 10px;
+  background: var(--bg-gray);
+  border: 1px solid var(--border-color);
   transition: all 0.3s ease;
   animation: fadeIn 0.5s ease;
 }
 
 .participant-item:hover {
-  background: #f0f0f0;
-  border-color: #d9d9d9;
+  background: #edf2f7;
+  border-color: var(--primary-light);
   transform: translateY(-2px);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 @keyframes fadeIn {
@@ -407,7 +469,7 @@ body {
   height: 48px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid #e8e8e8;
+  border: 2px solid var(--border-color);
   flex-shrink: 0;
 }
 
@@ -419,7 +481,7 @@ body {
 .participant-item .participant-nickname {
   font-size: 0.95rem;
   font-weight: 500;
-  color: #333;
+  color: var(--text-primary);
   margin-bottom: 4px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -431,14 +493,14 @@ body {
   align-items: center;
   gap: 6px;
   font-size: 0.85rem;
-  color: #52c41a;
+  color: var(--success);
 }
 
 .status-indicator {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background-color: #52c41a;
+  background-color: var(--success);
   animation: pulse 2s infinite;
 }
 
@@ -452,27 +514,28 @@ body {
 }
 
 .status-indicator.active {
-  background-color: #52c41a;
+  background-color: var(--success);
 }
 
 .status-indicator.inactive {
-  background-color: #d9d9d9;
+  background-color: var(--text-muted);
 }
 
 
 /* 图表样式 */
 .shake-chart {
-  background: white;
-  border-radius: 8px;
+  background: var(--bg-white);
+  border-radius: 12px;
   padding: 20px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
   margin-bottom: 20px;
 }
 
 .shake-chart h2 {
-  color: #333;
+  color: var(--text-primary);
   margin-bottom: 15px;
   font-size: 1.5rem;
+  font-weight: 600;
 }
 
 .chart-container {
@@ -482,7 +545,7 @@ body {
 .chart-empty {
   text-align: center;
   padding: 60px 20px;
-  color: #999;
+  color: var(--text-muted);
 }
 
 .chart-empty p {
@@ -492,13 +555,13 @@ body {
 
 .chart-empty .hint {
   font-size: 0.9rem;
-  color: #bbb;
+  color: var(--text-muted);
 }
 
 .chart-participants-info {
   margin-top: 20px;
   padding-top: 20px;
-  border-top: 1px solid #f0f0f0;
+  border-top: 1px solid var(--border-color);
 }
 
 .chart-participant-item {
@@ -507,29 +570,29 @@ body {
   gap: 12px;
   padding: 10px;
   margin-bottom: 8px;
-  border-radius: 6px;
-  background: #fafafa;
+  border-radius: 8px;
+  background: var(--bg-gray);
   transition: all 0.2s ease;
 }
 
 .chart-participant-item:hover {
-  background: #f0f0f0;
+  background: #edf2f7;
   transform: translateX(4px);
 }
 
 .chart-participant-item.rank-1 {
-  background: linear-gradient(135deg, #fff7e6 0%, #ffe7ba 100%);
-  border: 2px solid #ffd666;
+  background: linear-gradient(135deg, #fffaf0 0%, #feebc8 100%);
+  border: 2px solid #f6e05e;
 }
 
 .chart-participant-item.rank-2 {
-  background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
-  border: 2px solid #bfbfbf;
+  background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+  border: 2px solid #cbd5e0;
 }
 
 .chart-participant-item.rank-3 {
-  background: linear-gradient(135deg, #fff1f0 0%, #ffccc7 100%);
-  border: 2px solid #ffccc7;
+  background: linear-gradient(135deg, #fffaf0 0%, #fed7aa 100%);
+  border: 2px solid #ed8936;
 }
 
 .rank-badge {
@@ -544,7 +607,7 @@ body {
   height: 40px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid #e8e8e8;
+  border: 2px solid var(--border-color);
 }
 
 .participant-info-inline {
@@ -556,36 +619,37 @@ body {
 
 .participant-info-inline .nickname {
   font-weight: 500;
-  color: #333;
+  color: var(--text-primary);
   font-size: 0.95rem;
 }
 
 .participant-info-inline .shake-count {
   font-weight: 600;
-  color: #1890ff;
+  color: var(--primary);
   font-size: 1rem;
 }
 
 .more-participants {
   text-align: center;
   padding: 10px;
-  color: #999;
+  color: var(--text-muted);
   font-size: 0.9rem;
   font-style: italic;
 }
 
 /* 中奖结果样式 */
 .winner-display {
-  background: white;
-  border-radius: 8px;
+  background: var(--bg-white);
+  border-radius: 12px;
   padding: 20px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
 }
 
 .winner-display h2 {
-  color: #333;
+  color: var(--text-primary);
   margin-bottom: 15px;
   font-size: 1.5rem;
+  font-weight: 600;
 }
 
 /* 按钮样式 */
@@ -593,14 +657,15 @@ button {
   padding: 10px 20px;
   font-size: 1rem;
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
   cursor: pointer;
   transition: all 0.3s ease;
+  font-weight: 500;
 }
 
 button:hover:not(:disabled) {
-  opacity: 0.9;
-  transform: translateY(-1px);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 button:active:not(:disabled) {
@@ -613,17 +678,21 @@ button:disabled {
 }
 
 .btn-primary {
-  background-color: #1890ff;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
   color: white;
 }
 
+.btn-primary:hover:not(:disabled) {
+  background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+}
+
 .btn-success {
-  background-color: #52c41a;
+  background: linear-gradient(135deg, #38a169 0%, var(--success) 100%);
   color: white;
 }
 
 .btn-danger {
-  background-color: #ff4d4f;
+  background: linear-gradient(135deg, #e53e3e 0%, var(--error) 100%);
   color: white;
 }
 
@@ -631,6 +700,7 @@ button:disabled {
   padding: 15px 40px;
   font-size: 1.2rem;
   font-weight: 600;
+  border-radius: 10px;
 }
 
 .btn-small {
@@ -640,11 +710,11 @@ button:disabled {
 
 /* 错误提示样式 */
 .error-message {
-  background-color: #fff2f0;
-  border: 1px solid #ffccc7;
-  color: #cf1322;
+  background-color: #fff5f5;
+  border: 1px solid #feb2b2;
+  color: #c53030;
   padding: 16px;
-  border-radius: 8px;
+  border-radius: 10px;
   margin-top: 20px;
   display: flex;
   justify-content: space-between;
@@ -662,5 +732,5 @@ button:disabled {
   justify-content: center;
   align-items: center;
   padding: 40px;
-  color: #666;
+  color: var(--text-secondary);
 }
