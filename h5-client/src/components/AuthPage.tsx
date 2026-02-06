@@ -116,7 +116,7 @@ const AuthPage: React.FC<AuthPageProps> = ({ sessionId, onAuthSuccess }) => {
       // 构建授权URL
       // 后端会生成完整的微信授权URL
       const authUrl = `${API_URL}/api/wechat/auth?sessionId=${sessionId}`;
-      
+
       // 跳转到授权页面
       window.location.href = authUrl;
     } catch (error) {
@@ -173,7 +173,7 @@ const AuthPage: React.FC<AuthPageProps> = ({ sessionId, onAuthSuccess }) => {
     } catch (error) {
       console.error('Authorization callback failed:', error);
       setAuthStatus('failed');
-      
+
       if (error instanceof Error) {
         setErrorMessage(error.message);
       } else {
@@ -228,12 +228,12 @@ const AuthPage: React.FC<AuthPageProps> = ({ sessionId, onAuthSuccess }) => {
     if (testMode && authStatus === 'pending') {
       return (
         <div className="auth-content">
-          <div className="auth-icon">🧪</div>
+          <img src="/images/gift_icon.png" alt="礼物" className="auth-gift-icon" />
           <h2>测试模式</h2>
           <p className="auth-description">
             输入测试信息快速参与抽奖
           </p>
-          
+
           <div className="test-form">
             <div className="form-group">
               <label htmlFor="nickname">昵称 *</label>
@@ -264,7 +264,7 @@ const AuthPage: React.FC<AuthPageProps> = ({ sessionId, onAuthSuccess }) => {
               <p className="error-text">{errorMessage}</p>
             )}
 
-            <button 
+            <button
               className="auth-button primary"
               onClick={handleTestModeAuth}
               disabled={isProcessing || !testNickname.trim()}
@@ -272,7 +272,7 @@ const AuthPage: React.FC<AuthPageProps> = ({ sessionId, onAuthSuccess }) => {
               开始参与
             </button>
 
-            <button 
+            <button
               className="auth-button link"
               onClick={() => setTestMode(false)}
             >
@@ -287,10 +287,10 @@ const AuthPage: React.FC<AuthPageProps> = ({ sessionId, onAuthSuccess }) => {
       case 'pending':
         return (
           <div className="auth-content">
-            <div className="auth-icon">🎉</div>
+            <img src="/images/gift_icon.png" alt="礼物" className="auth-gift-icon" />
             <h2>欢迎参与抽奖</h2>
             <p className="auth-description">
-              需要获取您的微信信息才能参与抽奖
+              需要获取您的微信才能参与抽奖
             </p>
             <button
               className="auth-button primary"
@@ -334,7 +334,7 @@ const AuthPage: React.FC<AuthPageProps> = ({ sessionId, onAuthSuccess }) => {
             <p className="auth-description error">
               {errorMessage || '授权过程出现问题，请重试'}
             </p>
-            <button 
+            <button
               className="auth-button secondary"
               onClick={retryAuth}
             >
@@ -350,7 +350,16 @@ const AuthPage: React.FC<AuthPageProps> = ({ sessionId, onAuthSuccess }) => {
 
   return (
     <div className="auth-page">
-      <div className="auth-container">
+      {/* 装饰图片层 */}
+      <img src="/images/decor_top-67619e.png" alt="" className="decor-top" />
+      <img src="/images/decor_right_top.png" alt="" className="decor-right-top" />
+      <img src="/images/banner_title.png" alt="" className="decor-banner" />
+      <img src="/images/decor_left_bottom.png" alt="" className="decor-left-bottom" />
+      <img src="/images/decor_cat.png" alt="" className="decor-cat" />
+      <img src="/images/logo_bottom.png" alt="" className="decor-logo" />
+
+      {/* 中间白色卡片 */}
+      <div className="auth-card">
         {renderContent()}
       </div>
     </div>

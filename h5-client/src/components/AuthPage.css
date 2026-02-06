@@ -1,47 +1,242 @@
+/* ===== 全屏红色背景 ===== */
 .auth-page {
   min-height: 100vh;
+  min-height: 100dvh;
+  width: 100vw;
+  background: #E8322F;
+  position: fixed;
+  top: 0;
+  left: 0;
+  overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #1a365d 0%, #2c5282 50%, #2b6cb0 100%);
-  padding: 20px;
-  position: relative;
+  z-index: 100;
 }
 
-/* 节日感背景装饰 - 金色光点 */
-.auth-page::before {
-  content: '';
+/* ===== 装饰图片层 ===== */
+.decor-top {
   position: absolute;
   top: 0;
   left: 0;
-  right: 0;
-  bottom: 0;
-  background:
-    radial-gradient(circle at 10% 20%, rgba(246, 224, 94, 0.15) 0%, transparent 25%),
-    radial-gradient(circle at 90% 80%, rgba(246, 224, 94, 0.15) 0%, transparent 25%),
-    radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.05) 0%, transparent 50%);
+  width: 100%;
+  height: 45.6%;
+  object-fit: fill;
+  z-index: 1;
   pointer-events: none;
 }
 
-.auth-container {
-  background: white;
-  border-radius: 20px;
-  padding: 40px 30px;
-  max-width: 400px;
-  width: 100%;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-  text-align: center;
-  position: relative;
-  z-index: 1;
+.decor-right-top {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 50%;
+  height: 60.2%;
+  object-fit: cover;
+  z-index: 2;
+  pointer-events: none;
 }
 
+.decor-left-bottom {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 36.9%;
+  height: 40.1%;
+  object-fit: cover;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.decor-banner {
+  position: absolute;
+  top: 5%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 83.3%;
+  height: auto;
+  z-index: 12;
+  pointer-events: none;
+}
+
+.decor-cat {
+  position: absolute;
+  bottom: 5%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 53.6%;
+  height: auto;
+  z-index: 11;
+  pointer-events: none;
+}
+
+.decor-logo {
+  position: absolute;
+  bottom: 0.8%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 23.6%;
+  height: auto;
+  z-index: 4;
+  pointer-events: none;
+}
+
+/* ===== 中间白色卡片 ===== */
+.auth-card {
+  position: relative;
+  z-index: 10;
+  width: 72.6%;
+  max-width: 283px;
+  height: auto;
+  min-height: 481px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 10px solid #DDAB87;
+  border-radius: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 2%;
+}
+
+/* ===== 卡片内容区域 ===== */
 .auth-content {
+  position: relative;
+  z-index: 5;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 20px;
+  padding: 40px 20px;
+  width: 100%;
+  box-sizing: border-box;
+  margin-bottom: 30%;
 }
 
+.auth-gift-icon {
+  width: 95px;
+  height: 95px;
+  object-fit: cover;
+  margin-bottom: 12px;
+}
+
+.auth-content h2 {
+  font-family: 'PingFang SC', -apple-system, sans-serif;
+  font-weight: 500;
+  font-size: 20px;
+  line-height: 1.4;
+  color: #6C2A29;
+  margin: 0 0 8px 0;
+  text-align: center;
+}
+
+.auth-description {
+  font-family: 'PingFang SC', -apple-system, sans-serif;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 1.4;
+  color: #6C2A29;
+  margin: 0 0 24px 0;
+  text-align: center;
+}
+
+.auth-description.error {
+  color: #f56565;
+}
+
+/* ===== 授权按钮 ===== */
+.auth-button {
+  width: 190px;
+  height: 40px;
+  padding: 7px 12px;
+  font-family: 'PingFang SC', -apple-system, sans-serif;
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 1.4;
+  color: #FDE5B5;
+  background: linear-gradient(90deg, rgba(254, 79, 83, 1) 0%, rgba(250, 42, 35, 1) 51%, rgba(255, 150, 147, 1) 100%);
+  border: 3px solid;
+  border-image: linear-gradient(90deg, rgba(254, 250, 216, 1) 0%, rgba(254, 102, 1, 1) 100%) 1;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  z-index: 7;
+}
+
+/* border-image 和 border-radius 不兼容，用伪元素实现渐变边框 */
+.auth-button {
+  border: none;
+  position: relative;
+  background-clip: padding-box;
+  isolation: isolate;
+}
+
+.auth-button::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 12px;
+  padding: 3px;
+  background: linear-gradient(90deg, rgba(254, 250, 216, 1) 0%, rgba(254, 102, 1, 1) 100%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.auth-button.primary {
+  background: linear-gradient(90deg, rgba(254, 79, 83, 1) 0%, rgba(250, 42, 35, 1) 51%, rgba(255, 150, 147, 1) 100%);
+  color: #FDE5B5;
+}
+
+.auth-button.primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 20px rgba(250, 42, 35, 0.4);
+}
+
+.auth-button.primary:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.auth-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.auth-button.secondary {
+  background: rgba(255, 255, 255, 0.8);
+  color: #6C2A29;
+}
+
+.auth-button.secondary::before {
+  background: linear-gradient(90deg, #DDAB87, #DDAB87);
+}
+
+.auth-button.secondary:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 1);
+}
+
+/* ===== Loading 状态 ===== */
+.auth-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.spinner {
+  width: 48px;
+  height: 48px;
+  border: 4px solid rgba(108, 42, 41, 0.2);
+  border-top-color: #6C2A29;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+/* ===== 成功/失败图标 ===== */
 .auth-icon {
   font-size: 64px;
   margin-bottom: 10px;
@@ -60,85 +255,14 @@
   animation: shake 0.5s ease-out;
 }
 
-.auth-content h2 {
-  font-size: 24px;
-  font-weight: 600;
-  color: #2d3748;
-  margin: 0;
-}
-
-.auth-description {
-  font-size: 16px;
-  color: #718096;
-  line-height: 1.5;
-  margin: 0;
-}
-
-.auth-description.error {
-  color: #f56565;
-}
-
-.auth-button {
-  width: 100%;
-  padding: 14px 24px;
-  font-size: 16px;
-  font-weight: 600;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  margin-top: 10px;
-}
-
-.auth-button.primary {
-  background: linear-gradient(135deg, #2c5282 0%, #4299e1 100%);
-  color: white;
-}
-
-.auth-button.primary:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 5px 20px rgba(44, 82, 130, 0.4);
-}
-
-.auth-button.primary:active:not(:disabled) {
-  transform: translateY(0);
-}
-
-.auth-button.secondary {
-  background: #f7fafc;
-  color: #2d3748;
-}
-
-.auth-button.secondary:hover:not(:disabled) {
-  background: #edf2f7;
-}
-
-.auth-button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.auth-loading {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-bottom: 10px;
-}
-
-.spinner {
-  width: 48px;
-  height: 48px;
-  border: 4px solid #edf2f7;
-  border-top-color: #2c5282;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-
-/* Animations */
+/* ===== 动画 ===== */
 @keyframes bounce {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateY(0);
   }
+
   50% {
     transform: translateY(-10px);
   }
@@ -155,6 +279,7 @@
     transform: scale(0);
     opacity: 0;
   }
+
   to {
     transform: scale(1);
     opacity: 1;
@@ -162,42 +287,22 @@
 }
 
 @keyframes shake {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateX(0);
   }
+
   25% {
     transform: translateX(-10px);
   }
+
   75% {
     transform: translateX(10px);
   }
 }
 
-/* Mobile responsiveness */
-@media (max-width: 480px) {
-  .auth-container {
-    padding: 30px 20px;
-  }
-
-  .auth-content h2 {
-    font-size: 20px;
-  }
-
-  .auth-description {
-    font-size: 14px;
-  }
-
-  .auth-icon {
-    font-size: 56px;
-  }
-
-  .auth-icon.success,
-  .auth-icon.error {
-    font-size: 64px;
-  }
-}
-
-/* Test Mode Styles */
+/* ===== 测试模式表单 ===== */
 .test-form {
   width: 100%;
   display: flex;
@@ -214,24 +319,25 @@
   display: block;
   font-size: 14px;
   font-weight: 500;
-  color: #2d3748;
+  color: #6C2A29;
   margin-bottom: 6px;
 }
 
 .test-input {
   width: 100%;
-  padding: 12px 14px;
-  font-size: 15px;
-  border: 2px solid #e2e8f0;
+  padding: 10px 12px;
+  font-size: 14px;
+  border: 2px solid #DDAB87;
   border-radius: 8px;
   transition: all 0.3s ease;
   box-sizing: border-box;
+  background: rgba(255, 255, 255, 0.8);
 }
 
 .test-input:focus {
   outline: none;
-  border-color: #4299e1;
-  box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.15);
+  border-color: #E8322F;
+  box-shadow: 0 0 0 3px rgba(232, 50, 47, 0.15);
 }
 
 .test-input::placeholder {
@@ -247,14 +353,21 @@
 
 .auth-button.link {
   background: transparent;
-  color: #2c5282;
+  color: #6C2A29;
   padding: 10px;
   font-size: 14px;
   margin-top: 0;
+  width: auto;
+  height: auto;
+  border: none;
+}
+
+.auth-button.link::before {
+  display: none;
 }
 
 .auth-button.link:hover {
-  background: #f7fafc;
+  background: rgba(255, 255, 255, 0.3);
 }
 
 .divider {
@@ -269,7 +382,7 @@
   content: '';
   flex: 1;
   height: 1px;
-  background: #e2e8f0;
+  background: #DDAB87;
 }
 
 .divider span {
@@ -283,4 +396,39 @@
   color: #a0aec0;
   margin: 5px 0 0 0;
   line-height: 1.4;
+}
+
+/* ===== 移动端适配 ===== */
+@media (max-width: 390px) {
+  .auth-card {
+    width: 80%;
+    min-height: auto;
+    border-width: 8px;
+  }
+
+  .auth-gift-icon {
+    width: 75px;
+    height: 75px;
+  }
+
+  .auth-button {
+    width: 170px;
+    font-size: 16px;
+  }
+}
+
+@media (max-height: 700px) {
+  .auth-card {
+    min-height: auto;
+    margin-top: 5%;
+  }
+
+  .decor-banner {
+    top: 5%;
+  }
+
+  .decor-cat {
+    bottom: 4%;
+    width: 40%;
+  }
 }
