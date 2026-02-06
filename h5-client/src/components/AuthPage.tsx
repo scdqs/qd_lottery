@@ -215,6 +215,21 @@ const AuthPage: React.FC<AuthPageProps> = ({ sessionId, onAuthSuccess }) => {
   };
 
   /**
+   * 测试快捷入口：点击礼物图标直接跳转到摇一摇页面
+   */
+  const handleQuickSkipAuth = () => {
+    const mockUserInfo: WeChatUserInfo = {
+      openid: `test_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      nickname: '测试用户',
+      headimgurl: 'https://via.placeholder.com/100?text=T',
+    };
+    setUserInfo(mockUserInfo);
+    setAuthStatus('success');
+    setErrorMessage(null);
+    onAuthSuccess(mockUserInfo);
+  };
+
+  /**
    * 重试授权
    */
   const retryAuth = () => {
@@ -288,6 +303,7 @@ const AuthPage: React.FC<AuthPageProps> = ({ sessionId, onAuthSuccess }) => {
         return (
           <div className="auth-content">
             <img src="/images/gift_icon.png" alt="礼物" className="auth-gift-icon" />
+            {/* <img src="/images/gift_icon.png" alt="礼物" className="auth-gift-icon" onClick={handleQuickSkipAuth} style={{ cursor: 'pointer' }} /> */}
             <h2>欢迎参与抽奖</h2>
             <p className="auth-description">
               需要获取您的微信才能参与抽奖

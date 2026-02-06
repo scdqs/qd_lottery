@@ -87,8 +87,7 @@
   z-index: 10;
   width: 72.6%;
   max-width: 283px;
-  height: auto;
-  min-height: 481px;
+  height: 481px;
   background: rgba(255, 255, 255, 0.9);
   border: 10px solid #DDAB87;
   border-radius: 32px;
@@ -96,6 +95,7 @@
   align-items: center;
   justify-content: center;
   margin-top: 2%;
+  overflow: hidden;
 }
 
 /* ===== 卡片内容区域 ===== */
@@ -402,7 +402,7 @@
 @media (max-width: 390px) {
   .auth-card {
     width: 80%;
-    min-height: auto;
+    height: 440px;
     border-width: 8px;
   }
 
@@ -419,7 +419,7 @@
 
 @media (max-height: 700px) {
   .auth-card {
-    min-height: auto;
+    height: 420px;
     margin-top: 5%;
   }
 

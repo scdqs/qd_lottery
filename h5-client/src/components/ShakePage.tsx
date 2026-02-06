@@ -7,7 +7,7 @@ import './ShakePage.css';
 /**
  * ShakePage组件
  * 显示摇一摇界面，处理传感器监听和中奖结果展示
- * 
+ *
  * 需求: 5.1, 5.5, 7.6
  */
 
@@ -18,9 +18,9 @@ interface ShakePageProps {
   throttleInterval?: number; // 节流间隔（毫秒），默认500ms
 }
 
-const ShakePage: React.FC<ShakePageProps> = ({ 
-  sessionId, 
-  userId, 
+const ShakePage: React.FC<ShakePageProps> = ({
+  sessionId,
+  userId,
   onShakeCountUpdate,
   throttleInterval = 500 // 默认500ms节流
 }) => {
@@ -134,7 +134,7 @@ const ShakePage: React.FC<ShakePageProps> = ({
     try {
       const granted = await sensorRef.current.requestPermission();
       setPermissionRequested(true);
-      
+
       if (granted) {
         setNeedsPermission(false);
         setErrorMessage(null);
@@ -220,39 +220,27 @@ const ShakePage: React.FC<ShakePageProps> = ({
     // 如果需要权限且还没请求，显示权限请求按钮
     if (needsPermission && !permissionRequested) {
       return (
-        <div className="shake-page-content">
-          <div className="shake-icon waiting">
-            <span className="icon">🔐</span>
-          </div>
+        <div className="shake-page-content auth-like">
+          <img src="/images/lock_icon.svg" alt="" className="shake-card-icon" />
           <h2 className="shake-title">需要授权</h2>
           <p className="shake-description">
             需要您的授权才能使用摇一摇功能
           </p>
-          <button 
+          <button
             className="permission-button"
             onClick={requestSensorPermission}
           >
             授权访问传感器
           </button>
-          <div className="shake-tips">
-            <p>💡 点击按钮后，请在弹窗中选择"允许"</p>
-            <p>💡 这是iOS设备的安全要求</p>
-          </div>
         </div>
       );
     }
 
     return (
       <div className="shake-page-content">
-        <div className="shake-icon waiting">
-          <span className="icon">📱</span>
-        </div>
-        <h2 className="shake-title">准备就绪</h2>
-        <p className="shake-description">等待活动开始...</p>
-        <div className="shake-tips">
-          <p>💡 活动开始后，请用力摇动手机</p>
-          <p>💡 摇动次数越多，中奖机会越大</p>
-        </div>
+        <img src="/images/shake_icon.png" alt="" className="shake-card-icon" />
+        <h2 className="shake-title">活动开始后请用力摇动手机！</h2>
+        <h2 className="shake-title">摇动次数越多中奖机会越大！</h2>
       </div>
     );
   };
@@ -263,18 +251,12 @@ const ShakePage: React.FC<ShakePageProps> = ({
    */
   const renderShakingState = () => (
     <div className="shake-page-content">
-      <div className="shake-icon shaking">
-        <span className="icon animate-shake">📱</span>
-      </div>
+      <img src="/images/shake_icon.png" alt="" className="shake-card-icon shaking" />
       <h2 className="shake-title">开始摇一摇！</h2>
       <div className="shake-count-display">
         <span className="count-number">{shakeCount}</span>
         <span className="count-label">次</span>
       </div>
-      <p className="shake-description">
-        用力摇动手机，争取好名次！
-      </p>
-
       <div className="shake-animation">
         <div className="wave wave-1"></div>
         <div className="wave wave-2"></div>
@@ -289,9 +271,7 @@ const ShakePage: React.FC<ShakePageProps> = ({
    */
   const renderStoppedState = () => (
     <div className="shake-page-content">
-      <div className="shake-icon stopped">
-        <span className="icon">⏸️</span>
-      </div>
+      <img src="/images/shake_icon.png" alt="" className="shake-card-icon" />
       <h2 className="shake-title">活动已结束</h2>
       <div className="shake-count-display">
         <span className="count-number">{shakeCount}</span>
@@ -308,38 +288,29 @@ const ShakePage: React.FC<ShakePageProps> = ({
    */
   const renderResultState = () => {
     if (isWinner && rank) {
-      // 动态生成名次标签
-      const getRankLabel = (r: number) => {
-        const medals = ['', '🥇', '🥈', '🥉'];
-        const medal = medals[r] || '🏆';
-        return `${medal} 第${r}名`;
-      };
       return (
         <div className="shake-page-content result-winner">
-          <div className="winner-badge">
-            <span className="badge-icon">🎉</span>
+          <img src="/images/winner_icon.png" alt="" className="shake-card-icon" />
+          <h2 className="shake-title">666！你中奖啦！</h2>
+          <div className="result-area">
+            <img src="/images/result_bg.png" alt="" className="result-bg" />
+            <div className="result-info">
+              <p className="result-rank">第 {rank} 名</p>
+              <p className="result-count">你摇了 {shakeCount} 次</p>
+            </div>
           </div>
-          <h2 className="result-title">恭喜中奖！</h2>
-          <div className="winner-rank">{getRankLabel(rank)}</div>
-          <div className="shake-count-display">
-            <span className="count-number">{shakeCount}</span>
-            <span className="count-label">次</span>
-          </div>
-          <p className="result-description">您的摇动次数</p>
         </div>
       );
     } else {
       return (
         <div className="shake-page-content result-no-win">
-          <div className="no-win-icon">
-            <span className="icon">😊</span>
-          </div>
-          <h2 className="result-title">感谢参与</h2>
+          <img src="/images/shake_icon.png" alt="" className="shake-card-icon" />
+          <h2 className="shake-title">感谢参与</h2>
           <div className="shake-count-display">
             <span className="count-number">{shakeCount}</span>
             <span className="count-label">次</span>
           </div>
-          <p className="result-description">您的摇动次数</p>
+          <p className="shake-description">您的摇动次数</p>
           <p className="encourage-text">下次继续加油！</p>
         </div>
       );
@@ -352,20 +323,14 @@ const ShakePage: React.FC<ShakePageProps> = ({
    */
   const renderUnsupportedState = () => (
     <div className="shake-page-content">
-      <div className="shake-icon error">
-        <span className="icon">⚠️</span>
-      </div>
+      <img src="/images/lock_icon.svg" alt="" className="shake-card-icon" />
       <h2 className="shake-title">传感器不可用</h2>
       <p className="shake-description">
         您的设备传感器暂时无法使用
       </p>
       <p className="error-hint">
-        可能原因：浏览器需要HTTPS或localhost访问传感器
+        请确保使用HTTPS协议访问，或尝试使用其他浏览器
       </p>
-      <div className="shake-tips">
-        <p>💡 请确保使用HTTPS协议访问</p>
-        <p>💡 或尝试使用其他浏览器</p>
-      </div>
     </div>
   );
 
@@ -408,7 +373,21 @@ const ShakePage: React.FC<ShakePageProps> = ({
 
   return (
     <div className="shake-page">
-      {renderContent()}
+      {/* 装饰图片层 */}
+      <img src="/images/decor_top-67619e.png" alt="" className="shake-decor-top" />
+      <img src="/images/decor_right_top.png" alt="" className="shake-decor-right-top" />
+      <img src="/images/banner_title.png" alt="" className="shake-decor-banner" />
+      <img src="/images/decor_left_bottom.png" alt="" className="shake-decor-left-bottom" />
+      <img src="/images/decor_cat.png" alt="" className="shake-decor-cat" />
+      {/* {shakeStatus === 'waiting' && sensorSupported && winners.length === 0 && !(needsPermission && !permissionRequested) && (
+        <img src="/images/tips_bg.png" alt="" className="shake-tips-bg" />
+      )} */}
+      <img src="/images/logo_bottom.png" alt="" className="shake-decor-logo" />
+
+      {/* 中间白色卡片 */}
+      <div className="shake-card">
+        {renderContent()}
+      </div>
     </div>
   );
 };

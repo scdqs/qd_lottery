@@ -1,134 +1,253 @@
+/* ===== 全屏红色背景（与 AuthPage 一致） ===== */
 .shake-page {
-  width: 100%;
   min-height: 100vh;
+  min-height: 100dvh;
+  width: 100vw;
+  background: #E8322F;
+  position: fixed;
+  top: 0;
+  left: 0;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+/* ===== 装饰图片层（复用 AuthPage 的定位） ===== */
+.shake-decor-top {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 45.6%;
+  object-fit: fill;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.shake-decor-right-top {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 50%;
+  height: 60.2%;
+  object-fit: cover;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.shake-decor-left-bottom {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 36.9%;
+  height: 40.1%;
+  object-fit: cover;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.shake-decor-banner {
+  position: absolute;
+  top: 5%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 83.3%;
+  height: auto;
+  z-index: 12;
+  pointer-events: none;
+}
+
+.shake-decor-cat {
+  position: absolute;
+  bottom: 5%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 53.6%;
+  height: auto;
+  z-index: 11;
+  pointer-events: none;
+}
+
+.shake-decor-logo {
+  position: absolute;
+  bottom: 0.8%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 23.6%;
+  height: auto;
+  z-index: 4;
+  pointer-events: none;
+}
+
+/* ===== 中间白色卡片 ===== */
+.shake-card {
+  position: relative;
+  z-index: 10;
+  width: 72.6%;
+  max-width: 283px;
+  height: 481px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 10px solid #DDAB87;
+  border-radius: 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 2%;
+  overflow: hidden;
+}
+
+/* ===== 卡片内容区域 ===== */
+.shake-page-content {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #1a365d 0%, #2c5282 50%, #2b6cb0 100%);
-  padding: 20px;
+  padding: 26px 20px 100px;
+  width: 100%;
+  height: 100%;
   box-sizing: border-box;
-  position: relative;
+  text-align: center;
 }
 
-/* 节日感背景装饰 - 金色光点 */
-.shake-page::before {
-  content: '';
+/* ===== 卡片顶部图标 ===== */
+.shake-card-icon {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  margin-bottom: 15px;
+}
+
+.shake-card-icon.shaking {
+  animation: shake-wobble 0.5s infinite;
+}
+
+@keyframes shake-wobble {
+
+  0%,
+  100% {
+    transform: translateX(0) rotate(0deg);
+  }
+
+  10%,
+  30%,
+  50%,
+  70%,
+  90% {
+    transform: translateX(-8px) rotate(-5deg);
+  }
+
+  20%,
+  40%,
+  60%,
+  80% {
+    transform: translateX(8px) rotate(5deg);
+  }
+}
+
+/* ===== 标题文字 ===== */
+.shake-title {
+  font-family: 'PingFang SC', -apple-system, sans-serif;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 1.4;
+  color: #6C2A29;
+  margin: 0 0 10px 0;
+  text-align: center;
+}
+
+/* ===== 描述文字 ===== */
+.shake-description {
+  font-family: 'PingFang SC', -apple-system, sans-serif;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 1.4;
+  color: #6C2A29;
+  margin: 0 0 8px 0;
+  text-align: center;
+}
+
+/* ===== 提示区域（带背景图） ===== */
+.shake-tips-area {
+  position: relative;
+  width: calc(100% - 6px);
+  margin-top: 8px;
+}
+
+.shake-tips-bg {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background:
-    radial-gradient(circle at 10% 20%, rgba(246, 224, 94, 0.15) 0%, transparent 25%),
-    radial-gradient(circle at 90% 80%, rgba(246, 224, 94, 0.15) 0%, transparent 25%),
-    radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.05) 0%, transparent 50%);
+  bottom: 22%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 72.6%;
+  max-width: 283px;
+  height: auto;
+  display: block;
+  border-radius: 8px;
+  z-index: 9;
   pointer-events: none;
 }
 
-.shake-page-content {
-  width: 100%;
-  max-width: 400px;
+/* 
+.shake-tips-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 80%;
   text-align: center;
-  color: white;
-  position: relative;
-  z-index: 1;
 }
 
-/* 图标样式 */
-.shake-icon {
-  margin-bottom: 30px;
-}
+.shake-tips-text p {
+  font-family: 'PingFang SC', -apple-system, sans-serif;
+  font-weight: 500;
+  font-size: 17px;
+  line-height: 1.4;
+  color: #FFF7CE;
+  margin: 4px 0;
+} */
 
-.shake-icon .icon {
-  font-size: 80px;
-  display: inline-block;
-}
-
-/* 摇动动画 */
-.shake-icon.shaking .icon {
-  animation: shake 0.5s infinite;
-}
-
-@keyframes shake {
-  0%, 100% { transform: translateX(0) rotate(0deg); }
-  10%, 30%, 50%, 70%, 90% { transform: translateX(-10px) rotate(-5deg); }
-  20%, 40%, 60%, 80% { transform: translateX(10px) rotate(5deg); }
-}
-
-/* 标题样式 */
-.shake-title {
-  font-size: 28px;
-  font-weight: bold;
-  margin-bottom: 20px;
-  color: #f6e05e;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-}
-
-/* 描述文字 */
-.shake-description {
-  font-size: 16px;
-  color: rgba(255, 255, 255, 0.9);
-  margin-bottom: 20px;
-}
-
-/* 摇动次数显示 */
+/* ===== 摇动次数显示 ===== */
 .shake-count-display {
-  margin: 30px 0;
-  padding: 20px;
-  background: rgba(255, 255, 255, 0.15);
-  border-radius: 20px;
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  margin: 16px 0 8px;
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 4px;
 }
 
 .count-number {
-  font-size: 72px;
-  font-weight: bold;
-  color: #f6e05e;
-  display: block;
+  font-family: 'PingFang SC', -apple-system, sans-serif;
+  font-weight: 500;
+  font-size: 48px;
   line-height: 1;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  color: #6C2A29;
 }
 
 .count-label {
-  font-size: 24px;
-  color: rgba(255, 255, 255, 0.9);
-  margin-left: 10px;
+  font-family: 'PingFang SC', -apple-system, sans-serif;
+  font-weight: 500;
+  font-size: 20px;
+  color: #6C2A29;
 }
 
-/* 提示信息 */
-.shake-tips {
-  margin-top: 40px;
-  padding: 20px;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 15px;
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-}
-
-.shake-tips p {
-  font-size: 14px;
-  color: rgba(255, 255, 255, 0.9);
-  margin: 10px 0;
-  text-align: left;
-}
-
-/* 波纹动画 */
+/* ===== 波纹动画（摇动中） ===== */
 .shake-animation {
   position: relative;
-  width: 200px;
-  height: 200px;
-  margin: 30px auto;
+  width: 120px;
+  height: 120px;
+  margin: 10px auto 0;
 }
 
 .wave {
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 100px;
-  height: 100px;
-  border: 3px solid rgba(246, 224, 94, 0.5);
+  width: 60px;
+  height: 60px;
+  border: 3px solid rgba(232, 50, 47, 0.4);
   border-radius: 50%;
   transform: translate(-50%, -50%);
   animation: wave-animation 2s infinite;
@@ -144,183 +263,279 @@
 
 @keyframes wave-animation {
   0% {
-    width: 100px;
-    height: 100px;
+    width: 60px;
+    height: 60px;
     opacity: 1;
   }
+
   100% {
-    width: 200px;
-    height: 200px;
+    width: 120px;
+    height: 120px;
     opacity: 0;
   }
 }
 
-/* 等待结果 */
+/* ===== 等待结果文字 ===== */
 .waiting-result {
+  font-family: 'PingFang SC', -apple-system, sans-serif;
   font-size: 14px;
-  color: rgba(255, 255, 255, 0.8);
-  margin-top: 20px;
+  color: #6C2A29;
+  margin-top: 12px;
+  opacity: 0.7;
   animation: pulse 1.5s infinite;
 }
 
 @keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
+
+  0%,
+  100% {
+    opacity: 0.7;
+  }
+
+  50% {
+    opacity: 0.3;
+  }
 }
 
-/* 中奖结果样式 */
+/* ===== 中奖结果区域 ===== */
+.result-area {
+  position: relative;
+  width: calc(100% - 6px);
+  margin-top: 8px;
+}
+
+.result-bg {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 8px;
+}
+
+.result-info {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 80%;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.result-rank {
+  font-family: 'PingFang SC', -apple-system, sans-serif;
+  font-weight: 500;
+  font-size: 28px;
+  line-height: 1.4;
+  color: #FF0400;
+  margin: 0;
+}
+
+.result-count {
+  font-family: 'PingFang SC', -apple-system, sans-serif;
+  font-weight: 500;
+  font-size: 22px;
+  line-height: 1.4;
+  color: #FF0400;
+  margin: 0;
+}
+
+/* ===== 中奖庆祝动画 ===== */
 .result-winner {
   animation: celebrate 0.6s ease-out;
 }
 
 @keyframes celebrate {
-  0% { transform: scale(0.8); opacity: 0; }
-  50% { transform: scale(1.1); }
-  100% { transform: scale(1); opacity: 1; }
+  0% {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+
+  50% {
+    transform: scale(1.05);
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
-.winner-badge {
-  margin-bottom: 20px;
-}
-
-.winner-badge .badge-icon {
-  font-size: 100px;
-  display: inline-block;
-  animation: bounce 1s infinite;
-}
-
-@keyframes bounce {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-20px); }
-}
-
-.result-title {
-  font-size: 32px;
-  font-weight: bold;
-  margin-bottom: 20px;
-  color: #f6e05e;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-}
-
-.winner-rank {
-  font-size: 36px;
-  font-weight: bold;
-  margin: 20px 0;
-  padding: 15px 30px;
-  background: rgba(246, 224, 94, 0.2);
-  border: 2px solid #f6e05e;
-  border-radius: 15px;
-  backdrop-filter: blur(10px);
-  display: inline-block;
-  color: #f6e05e;
-}
-
-/* 未中奖样式 */
+/* ===== 未中奖样式 ===== */
 .result-no-win {
   animation: fadeIn 0.5s ease-out;
 }
 
 @keyframes fadeIn {
-  0% { opacity: 0; }
-  100% { opacity: 1; }
-}
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
 
-.no-win-icon .icon {
-  font-size: 80px;
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .encourage-text {
-  font-size: 16px;
-  color: rgba(255, 255, 255, 0.8);
-  margin-top: 20px;
-}
-
-/* 错误状态 */
-.shake-icon.error .icon {
-  font-size: 80px;
-  color: #fc8181;
-}
-
-.error-hint {
+  font-family: 'PingFang SC', -apple-system, sans-serif;
   font-size: 14px;
-  color: rgba(255, 255, 255, 0.8);
-  margin-top: 20px;
-  padding: 15px;
-  background: rgba(252, 129, 129, 0.2);
-  border-radius: 10px;
-  border: 1px solid rgba(252, 129, 129, 0.3);
+  color: #6C2A29;
+  margin: 8px 0 0;
+  opacity: 0.7;
 }
 
-/* 响应式设计 */
-@media (max-width: 375px) {
-  .shake-title {
-    font-size: 24px;
-  }
-
-  .count-number {
-    font-size: 60px;
-  }
-
-  .count-label {
-    font-size: 20px;
-  }
-
-  .shake-icon .icon {
-    font-size: 60px;
-  }
-}
-
-
-/* 权限请求按钮 */
+/* ===== 权限请求按钮 ===== */
 .permission-button {
-  padding: 16px 40px;
-  font-size: 18px;
+  width: 190px;
+  height: 40px;
+  padding: 7px 12px;
+  font-family: 'PingFang SC', -apple-system, sans-serif;
   font-weight: 600;
-  color: white;
-  background: rgba(255, 255, 255, 0.15);
-  border: 2px solid rgba(255, 255, 255, 0.8);
-  border-radius: 50px;
+  font-size: 18px;
+  line-height: 1.4;
+  color: #FDE5B5;
+  background: linear-gradient(90deg, rgba(254, 79, 83, 1) 0%, rgba(250, 42, 35, 1) 51%, rgba(255, 150, 147, 1) 100%);
+  border: none;
+  border-radius: 12px;
   cursor: pointer;
   transition: all 0.3s ease;
-  margin: 30px 0;
-  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  position: relative;
+  background-clip: padding-box;
+  isolation: isolate;
+  margin-top: 16px;
 }
 
-.permission-button:hover {
-  background: rgba(255, 255, 255, 0.25);
-  transform: translateY(-2px);
-  box-shadow: 0 5px 20px rgba(255, 255, 255, 0.2);
+.permission-button::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 12px;
+  padding: 3px;
+  background: linear-gradient(90deg, rgba(254, 250, 216, 1) 0%, rgba(254, 102, 1, 1) 100%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  z-index: -1;
 }
 
 .permission-button:active {
-  transform: translateY(0);
+  transform: scale(0.97);
 }
 
+/* ===== 错误提示 ===== */
+.error-hint {
+  font-family: 'PingFang SC', -apple-system, sans-serif;
+  font-size: 13px;
+  color: #6C2A29;
+  margin-top: 12px;
+  padding: 12px;
+  background: rgba(232, 50, 47, 0.08);
+  border-radius: 10px;
+  border: 1px solid rgba(232, 50, 47, 0.15);
+  line-height: 1.5;
+}
 
-/* 手动摇动按钮 */
+/* ===== Loading 动画 ===== */
+.shake-spinner {
+  width: 48px;
+  height: 48px;
+  border: 4px solid rgba(108, 42, 41, 0.2);
+  border-top-color: #6C2A29;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 12px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ===== 手动摇动按钮（调试用） ===== */
 .manual-shake-button {
-  padding: 20px 50px;
-  font-size: 24px;
-  font-weight: 700;
-  color: #1a365d;
-  background: linear-gradient(135deg, #f6e05e 0%, #faf089 100%);
+  padding: 12px 32px;
+  font-family: 'PingFang SC', -apple-system, sans-serif;
+  font-size: 18px;
+  font-weight: 600;
+  color: #FDE5B5;
+  background: linear-gradient(90deg, rgba(254, 79, 83, 1) 0%, rgba(250, 42, 35, 1) 51%, rgba(255, 150, 147, 1) 100%);
   border: none;
-  border-radius: 60px;
+  border-radius: 12px;
   cursor: pointer;
   transition: all 0.2s ease;
-  margin: 30px 0;
-  box-shadow: 0 5px 20px rgba(246, 224, 94, 0.4);
-  user-select: none;
-  -webkit-tap-highlight-color: transparent;
+  margin-top: 12px;
+  position: relative;
+  background-clip: padding-box;
+  isolation: isolate;
+}
+
+.manual-shake-button::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 12px;
+  padding: 3px;
+  background: linear-gradient(90deg, rgba(254, 250, 216, 1) 0%, rgba(254, 102, 1, 1) 100%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  z-index: -1;
 }
 
 .manual-shake-button:active {
   transform: scale(0.95);
-  background: linear-gradient(135deg, #ecc94b 0%, #f6e05e 100%);
-  box-shadow: 0 2px 10px rgba(246, 224, 94, 0.5);
 }
 
-.manual-shake-button:hover {
-  background: linear-gradient(135deg, #ecc94b 0%, #f6e05e 100%);
-  box-shadow: 0 8px 25px rgba(246, 224, 94, 0.5);
+/* ===== 响应式适配 ===== */
+@media (max-width: 390px) {
+  .shake-card {
+    width: 80%;
+    height: 440px;
+    border-width: 8px;
+  }
+
+  .shake-card-icon {
+    width: 80px;
+    height: 80px;
+  }
+
+  .count-number {
+    font-size: 40px;
+  }
+
+  .permission-button {
+    width: 170px;
+    font-size: 16px;
+  }
+
+  /* .shake-tips-text p {
+    font-size: 15px;
+  } */
+}
+
+@media (max-height: 700px) {
+  .shake-card {
+    height: 420px;
+    margin-top: 5%;
+  }
+
+  .shake-decor-banner {
+    top: 5%;
+  }
+
+  .shake-decor-cat {
+    bottom: 4%;
+    width: 40%;
+  }
 }
