@@ -39,8 +39,8 @@ Monorepo 项目，包含三个子服务：
 | 变更路径 | 影响的服务 | 镜像名 |
 |---------|-----------|--------|
 | `backend/` | backend | qd_lottery-backend |
-| `web-client/` | web-client | qd_lottery-web-client |
-| `h5-client/` | h5-client | qd_lottery-h5-client |
+| `web-client/` | web-client | qd-web-client |
+| `h5-client/` | h5-client | qd-h5-client |
 | `docker-compose.yml` | 所有服务（需重新上传配置） | - |
 | `package.json`（根目录） | 可能影响所有服务 | 视情况判断 |
 
@@ -69,10 +69,10 @@ npm run build
 docker build --platform linux/amd64 --no-cache -t qd_lottery-backend:latest ./backend
 
 # 仅在 web-client/ 有变更时执行
-docker build --platform linux/amd64 --no-cache -t qd_lottery-web-client:latest ./web-client
+docker build --platform linux/amd64 --no-cache -t qd-web-client:latest ./web-client
 
 # 仅在 h5-client/ 有变更时执行
-docker build --platform linux/amd64 --no-cache -t qd_lottery-h5-client:latest ./h5-client
+docker build --platform linux/amd64 --no-cache -t qd-h5-client:latest ./h5-client
 ```
 
 ### 第3步：导出有变更的镜像为 tar 文件
@@ -82,8 +82,8 @@ docker build --platform linux/amd64 --no-cache -t qd_lottery-h5-client:latest ./
 ```bash
 # 仅导出有变更的镜像
 docker save qd_lottery-backend:latest -o qd_lottery-backend.tar
-docker save qd_lottery-web-client:latest -o qd_lottery-web-client.tar
-docker save qd_lottery-h5-client:latest -o qd_lottery-h5-client.tar
+docker save qd-web-client:latest -o qd-web-client.tar
+docker save qd-h5-client:latest -o qd-h5-client.tar
 ```
 
 ### 第4步：上传到服务器
@@ -101,8 +101,8 @@ cd /root/qd_lottery
 
 # 仅加载有变更的镜像
 docker load -i qd_lottery-backend.tar      # 仅 backend 有变更时
-docker load -i qd_lottery-web-client.tar   # 仅 web-client 有变更时
-docker load -i qd_lottery-h5-client.tar    # 仅 h5-client 有变更时
+docker load -i qd-web-client.tar   # 仅 web-client 有变更时
+docker load -i qd-h5-client.tar    # 仅 h5-client 有变更时
 
 # 停止旧容器 → 启动新容器
 docker-compose down
@@ -131,6 +131,8 @@ docker image prune -f
 
 1. **按需部署**: 先检测变更范围，只构建/上传/部署有变更的服务，节省时间和带宽
 2. **平台架构**: 永远记住用 `--platform linux/amd64`，这是最常见的部署失败原因
-3. **并行优化**: 第2、3、4步中的独立操作应尽量并行执行以节省时间
-4. **docker-compose.yml 版本警告**: `version` 字段已过时的警告可忽略，不影响运行
-5. **使用 TodoWrite 追踪进度**: 部署过程较长，用 todo list 跟踪每一步的进度
+3. **docker-compose.yml 必须用 `image:` 而非 `build:`**: 服务器上通过 `docker load` 加载预构建镜像，docker-compose.yml 中必须使用 `image: <镜像名>:latest` 引用镜像。如果误用 `build:` 指令，`docker-compose up` 会使用服务器本地缓存的旧构建层，导致部署的不是最新代码
+4. **镜像名称必须一致**: 构建命令中的 `-t <镜像名>` 必须与 docker-compose.yml 中的 `image:` 字段完全一致（backend: `qd_lottery-backend`, web-client: `qd-web-client`, h5-client: `qd-h5-client`）
+5. **并行优化**: 第2、3、4步中的独立操作应尽量并行执行以节省时间
+6. **docker-compose.yml 版本警告**: `version` 字段已过时的警告可忽略，不影响运行
+7. **使用 TodoWrite 追踪进度**: 部署过程较长，用 todo list 跟踪每一步的进度

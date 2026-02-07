@@ -1,0 +1,105 @@
+.app {
+    background: linear-gradient(180deg, #EB3731 2.19%, #E0272A 97.73%);
+}
+
+.header-img {
+    max-width: 700px;
+    width: 100%;
+    height: auto;
+    margin-bottom: 200px;
+    z-index: 3;
+}
+
+.header-img-wrap {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.header-horse {
+    height: 800px;
+    width: auto;
+    margin-left: -180px;
+}
+
+.main-logo {
+    position: absolute;
+    top: 50px;
+    left: 50px;
+    width: 250px;
+    height: auto;
+    z-index: 2;
+}
+
+.qrcode-section {
+    background: yellow;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+.qrcode-container {
+    margin-top: -500px;
+}
+
+.qrcode-bg {
+    width: 400px;
+    height: 400px;
+}
+
+.winners-title-img {
+    width: 20%;
+    height: auto;
+    margin-top: 28px;
+}
+
+
+.player-title-img {
+    width: 12%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+    margin-top: 12px;
+}
+
+/* 动态区域容器 */
+.dynamic-content-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    width: 100%;
+}
+
+/* 图表容器动画 */
+.shake-chart-container {
+    animation: slideInAndScale 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    transform-origin: top center;
+    z-index: 10;
+}
+
+@keyframes slideInAndScale {
+    0% {
+        opacity: 0;
+        transform: scale(0.9) translateY(-30px);
+        max-height: 0;
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+        max-height: 2000px;
+        /* 足够大的值以便展开 */
+    }
+}
+
+/* 参与者模块平滑过渡 */
+.participants-preview {
+    transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.6s ease;
+}
+
+/* 运行时稍微缩小参与者列表，突出图表 */
+.dynamic-content-wrapper.is-running .participants-preview {
+    opacity: 0.9;
+    transform: scale(0.98);
+}

@@ -15,34 +15,27 @@ export function WinnerDisplay({ winners }: WinnerDisplayProps) {
     return null;
   }
 
-  // 获取名次标识（支持任意名次）
-  const getRankLabel = (rank: number): string => {
+  // 获取名次勋章
+  const getRankMedal = (rank: number): string => {
     const medals = ['', '🥇', '🥈', '🥉'];
-    const medal = medals[rank] || '🏆';
-    return `${medal} 第${rank}名`;
+    return medals[rank] || '🏆';
   };
 
-  // 获取名次样式类（前3名特殊样式，其余通用样式）
+  // 获取样式类
   const getRankClass = (rank: number): string => {
-    if (rank <= 3) {
-      return `winner-card rank-${rank}`;
-    }
-    return 'winner-card rank-other';
+    return `winner-card rank-${rank}`;
   };
 
   return (
     <div className="winner-display">
-      <h2 className="winner-title">🎉 中奖名单 🎉</h2>
+      {/* <h2 className="winner-title">🎉 中奖名单 🎉</h2> */}
       <div className="winners-container">
         {winners.map((winner, index) => (
           <div
             key={winner.userId}
             className={getRankClass(winner.rank)}
-            style={{ animationDelay: `${index * 0.2}s` }}
+            style={{ animationDelay: `${index * 0.1}s` }}
           >
-            <div className="winner-rank-badge">
-              {getRankLabel(winner.rank)}
-            </div>
             <div className="winner-avatar-container">
               <img
                 src={winner.avatarUrl || '/head.png'}
@@ -54,11 +47,12 @@ export function WinnerDisplay({ winners }: WinnerDisplayProps) {
               />
             </div>
             <div className="winner-info">
-              <h3 className="winner-nickname">{winner.nickname}</h3>
-              <p className="winner-shake-count">
-                <span className="shake-icon">🎯</span>
-                摇动次数: <strong>{winner.shakeCount}</strong>
-              </p>
+              <div className="winner-nickname">{winner.nickname}</div>
+              <div className="winner-shake-count">
+                <span className="shake-icon">{getRankMedal(winner.rank)}</span>
+                {/* 摇动次数  */}
+                {winner.shakeCount}次
+              </div>
             </div>
           </div>
         ))}
