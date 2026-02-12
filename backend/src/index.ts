@@ -13,6 +13,9 @@ import {
   forceHttpsMiddleware,
   getHttpsOptions,
 } from './config/security';
+import { Logger } from './utils/logger';
+
+const logger = Logger.create('Server');
 
 // Load environment variables
 dotenv.config();
@@ -76,7 +79,7 @@ app.get('/api/admin/cleanup/stats', (_req, res) => {
       sessionExpiry: sessionExpiryMs,
     });
   } catch (error) {
-    console.error('Error getting cleanup stats:', error);
+    logger.error('获取清理统计失败', error);
     res.status(500).json({
       error: 'Failed to get cleanup statistics',
       message: error instanceof Error ? error.message : 'Unknown error',
@@ -94,7 +97,7 @@ app.post('/api/admin/cleanup/run', (_req, res) => {
       message: `Cleanup completed: ${deletedCount} session(s) deleted`,
     });
   } catch (error) {
-    console.error('Error running cleanup:', error);
+    logger.error('手动清理执行失败', error);
     res.status(500).json({
       error: 'Failed to run cleanup',
       message: error instanceof Error ? error.message : 'Unknown error',
@@ -112,7 +115,7 @@ app.post('/api/admin/cleanup/finished', (_req, res) => {
       message: `Finished session cleanup: ${deletedCount} session(s) deleted`,
     });
   } catch (error) {
-    console.error('Error cleaning up finished sessions:', error);
+    logger.error('清理已完成会话失败', error);
     res.status(500).json({
       error: 'Failed to cleanup finished sessions',
       message: error instanceof Error ? error.message : 'Unknown error',
@@ -138,7 +141,7 @@ app.post('/api/session/create', (_req, res) => {
       expiresAt,
     });
   } catch (error) {
-    console.error('Error creating session:', error);
+    logger.error('创建会话失败', error);
     res.status(500).json({ 
       error: 'Failed to create session',
       message: error instanceof Error ? error.message : 'Unknown error',
@@ -177,7 +180,7 @@ app.get('/api/session/:sessionId', (req, res) => {
       participantCount: session.participants.size,
     });
   } catch (error) {
-    console.error('Error querying session:', error);
+    logger.error('查询会话失败', error);
     res.status(500).json({
       error: 'Failed to query session',
       message: error instanceof Error ? error.message : 'Unknown error',
@@ -213,7 +216,7 @@ app.get('/api/wechat/auth', (req, res) => {
     // Redirect to WeChat authorization page
     res.redirect(authUrl);
   } catch (error) {
-    console.error('Error generating auth URL:', error);
+    logger.error('生成授权URL失败', error);
     res.status(500).json({
       error: 'Failed to generate authorization URL',
       message: error instanceof Error ? error.message : 'Unknown error',
@@ -260,7 +263,7 @@ app.get('/api/wechat/callback', async (req, res) => {
     // Redirect back to H5 client with user info
     res.redirect(`${h5BaseUrl}?sessionId=${sessionId}&userInfo=${userInfoBase64}`);
   } catch (error) {
-    console.error('Error handling WeChat callback:', error);
+    logger.error('微信回调处理失败', error);
     const errorMsg = encodeURIComponent(error instanceof Error ? error.message : '微信授权失败');
     const sessionId = req.query.state as string;
     const redirectUrl = sessionId
@@ -273,25 +276,28 @@ app.get('/api/wechat/callback', async (req, res) => {
 const PORT = process.env.PORT || 3000;
 
 server.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-  console.log(`Session cleanup interval: ${cleanupIntervalMs}ms`);
-  console.log(`Session expiry time: ${sessionExpiryMs}ms`);
+  logger.info(`服务启动成功，端口: ${PORT}`, {
+    env: process.env.NODE_ENV || 'development',
+    cleanupInterval: `${cleanupIntervalMs}ms`,
+    sessionExpiry: `${sessionExpiryMs}ms`,
+    nodeVersion: process.version,
+  });
 });
 
 // Graceful shutdown
 process.on('SIGTERM', () => {
-  console.log('SIGTERM signal received: closing HTTP server');
+  logger.info('收到 SIGTERM 信号，正在关闭服务...');
   sessionCleanupService.stop();
   server.close(() => {
-    console.log('HTTP server closed');
+    logger.info('HTTP 服务已关闭');
   });
 });
 
 process.on('SIGINT', () => {
-  console.log('SIGINT signal received: closing HTTP server');
+  logger.info('收到 SIGINT 信号，正在关闭服务...');
   sessionCleanupService.stop();
   server.close(() => {
-    console.log('HTTP server closed');
+    logger.info('HTTP 服务已关闭');
   });
 });
 

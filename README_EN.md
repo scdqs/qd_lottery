@@ -1,151 +1,176 @@
-# Company Lottery System
+# QD Shake - Real-Time Interactive Lottery System
 
-A real-time interactive lottery platform based on WeChat authorization, using a "shake" game mechanism to select winners.
+A real-time interactive lottery platform based on WeChat authorization. Participants compete by shaking their phones — the one who shakes the most wins.
 
 ## Project Structure
 
-This project uses a monorepo structure with three sub-projects:
+Monorepo architecture:
 
 ```
-company-lottery-system/
-├── backend/          # Backend service (Node.js + Express + Socket.io)
-├── web-client/       # Web display client (React + TypeScript)
-├── h5-client/        # H5 mobile client (React + TypeScript)
-└── package.json      # Root configuration file
+qd_lottery/
+├── backend/                # Backend service (Express + Socket.IO)
+│   ├── src/
+│   │   ├── index.ts                  # Entry point, HTTP routes
+│   │   ├── websocket.ts              # WebSocket real-time communication
+│   │   ├── SessionManager.ts         # Session management
+│   │   ├── SessionCleanupService.ts  # Automatic session cleanup
+│   │   ├── WeChatAuthService.ts      # WeChat OAuth authorization
+│   │   ├── config/
+│   │   │   └── security.ts           # Security config (CORS/CSP/HSTS)
+│   │   └── utils/
+│   │       └── logger.ts             # Logging utility
+│   └── Dockerfile
+├── web-client/             # PC admin dashboard (React + Vite)
+│   ├── nginx.conf
+│   └── Dockerfile
+├── h5-client/              # H5 mobile client (React + Vite)
+│   ├── nginx.conf
+│   └── Dockerfile
+├── scripts/
+│   ├── dev.sh              # Local dev startup script
+│   └── load-test.ts        # Load testing script
+├── docker-compose.yml      # Docker orchestration
+└── package.json            # Monorepo root config
 ```
+
+## Key Features
+
+- WeChat OAuth 2.0 login
+- Real-time shake data sync via WebSocket
+- Configurable winner count
+- Session lifecycle management with auto-cleanup
+- Live participant and shake data display on PC
+- Shake interaction on H5 mobile (dark festive theme)
+- Security hardening (CORS, CSP, HSTS, clickjacking protection)
 
 ## Tech Stack
 
-### Backend (backend)
-- Node.js 18+
-- Express (HTTP server)
-- Socket.io (WebSocket real-time communication)
-- TypeScript
-- Jest + fast-check (testing framework)
+### Backend
+- Node.js 18+ / Express / TypeScript
+- Socket.IO (WebSocket real-time communication)
+- Jest + fast-check (testing)
 
-### Web Client (web-client)
-- React 18+
-- TypeScript
-- Socket.io-client (WebSocket client)
-- Chart.js (data visualization)
-- QRCode.js (QR code generation)
-- Vite (build tool)
+### Web Client (PC Dashboard)
+- React 18+ / TypeScript / Vite
+- Socket.IO-client / Chart.js / QRCode.js
 
-### H5 Client (h5-client)
-- React 18+
-- TypeScript
-- Socket.io-client (WebSocket client)
-- Vite (build tool)
+### H5 Client (Mobile)
+- React 18+ / TypeScript / Vite
+- Socket.IO-client / Axios
+
+### Deployment
+- Docker Compose (three-service orchestration)
+- Nginx (static assets + reverse proxy + SSL)
 
 ## Quick Start
 
 ### Install Dependencies
 
 ```bash
-# Install dependencies for all sub-projects
 npm run install:all
 ```
 
-### Development Environment
-
-1. Configure backend environment variables:
+### Configure Environment Variables
 
 ```bash
+# Backend
 cd backend
 cp .env.example .env
-# Edit the .env file and fill in your WeChat Open Platform configuration
+# Edit .env with your WeChat Open Platform credentials
+
+# Clients (optional, defaults to localhost:3000)
+# web-client/.env.development
+# h5-client/.env.development
 ```
 
-2. Start the backend service:
+Key environment variables:
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `PORT` | Backend port | `3000` |
+| `WECHAT_APP_ID` | WeChat AppID | - |
+| `WECHAT_APP_SECRET` | WeChat AppSecret | - |
+| `WECHAT_REDIRECT_URI` | WeChat OAuth callback URL | - |
+| `H5_BASE_URL` | H5 client URL | `http://localhost:5173` |
+| `CORS_ORIGIN` | Allowed CORS origins | `http://localhost:3001,http://localhost:5173` |
+| `SESSION_CLEANUP_INTERVAL` | Cleanup interval (ms) | `3600000` (1 hour) |
+| `SESSION_EXPIRY_TIME` | Session expiry (ms) | `86400000` (24 hours) |
+
+### Local Development
 
 ```bash
-cd backend
-npm run dev
+# Option 1: Use the startup script (recommended, starts all 3 services in parallel)
+bash scripts/dev.sh
+
+# Option 2: Start each service manually
+cd backend && npm run dev     # http://localhost:3000
+cd web-client && npm run dev  # http://localhost:3001
+cd h5-client && npm run dev   # http://localhost:3002
 ```
-
-The backend service will run at http://localhost:3000
-
-3. Start the web client:
-
-```bash
-cd web-client
-npm run dev
-```
-
-The web client will run at http://localhost:3001
-
-4. Start the H5 client:
-
-```bash
-cd h5-client
-npm run dev
-```
-
-The H5 client will run at http://localhost:3002
 
 ### Build for Production
 
 ```bash
-# Build all sub-projects
 npm run build
 ```
 
 ### Run Tests
 
 ```bash
-# Run all tests
 npm run test
-
-# Run tests for specific sub-project
-cd backend && npm run test
-cd web-client && npm run test
-cd h5-client && npm run test
 ```
 
-### Code Linting and Formatting
+### Load Testing
 
 ```bash
-# Check code style
-npm run lint
-
-# Format code
-npm run format
-
-# Check formatting
-npm run format:check
+# Simulate 100 concurrent users shaking
+npx ts-node scripts/load-test.ts <sessionId> [serverUrl]
 ```
 
-## Development Guidelines
+## Lottery Flow
 
-### Code Style
+1. PC dashboard creates a session and generates a QR code
+2. Participants scan the QR code with WeChat and complete OAuth authorization
+3. H5 client joins the session and waits for the lottery to start
+4. PC dashboard starts the lottery, setting duration and winner count
+5. Participants shake their phones; shake data syncs to the PC in real time
+6. Lottery ends, winners are selected by shake count ranking
 
-- Use ESLint for code linting
-- Use Prettier for code formatting
-- Follow TypeScript strict mode
+## Docker Deployment
 
-### Testing Strategy
+```bash
+# 1. Build all projects
+npm run build
 
-This project adopts a dual testing approach:
+# 2. Build Docker images (add --platform for Mac ARM → Linux amd64)
+docker build --platform linux/amd64 --no-cache -t qd-backend:latest ./backend
+docker build --platform linux/amd64 --no-cache -t qd-web-client:latest ./web-client
+docker build --platform linux/amd64 --no-cache -t qd-h5-client:latest ./h5-client
 
-1. **Unit Tests**: Verify specific examples and edge cases
-2. **Property-Based Tests**: Use fast-check to verify general properties
+# 3. Export images
+docker save qd-backend:latest -o qd-backend.tar
+docker save qd-web-client:latest -o qd-web-client.tar
+docker save qd-h5-client:latest -o qd-h5-client.tar
 
-### Commit Convention
+# 4. Load and start on the server
+docker load -i qd-backend.tar
+docker load -i qd-web-client.tar
+docker load -i qd-h5-client.tar
+docker-compose down && docker-compose up -d
+docker image prune -f
+```
 
-We recommend using semantic commit messages:
+## Code Standards
 
-- `feat:` New feature
-- `fix:` Bug fix
-- `docs:` Documentation update
-- `style:` Code formatting adjustment
-- `refactor:` Refactoring
-- `test:` Test-related
-- `chore:` Build/tooling-related
+- ESLint + Prettier for linting and formatting
+- TypeScript strict mode
+- Semantic commit messages: `feat:` / `fix:` / `docs:` / `refactor:` / `test:` / `chore:`
 
 ## Requirements
 
 - Node.js >= 18.0.0
 - npm >= 9.0.0
+- Docker & Docker Compose (for deployment)
 
 ## License
 

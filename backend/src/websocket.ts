@@ -7,6 +7,9 @@ import { Server as SocketIOServer, Socket } from 'socket.io';
 import { Server as HTTPServer } from 'http';
 import { SessionManager } from './SessionManager';
 import { Participant } from './types';
+import { Logger } from './utils/logger';
+
+const logger = Logger.create('WebSocket');
 
 /**
  * 客户端类型
@@ -84,7 +87,7 @@ export function setupWebSocketServer(
 
   // 处理客户端连接
   io.on('connection', (socket: Socket<ClientToServerEvents, ServerToClientEvents, {}, SocketData>) => {
-    console.log('Client connected:', socket.id);
+    logger.info('客户端连接', { socketId: socket.id });
 
     // 处理加入会话事件
     socket.on('join-session', (data) => {
@@ -163,14 +166,14 @@ function handleJoinSession(
       lotteryDuration: session.lotteryDuration,
     });
 
-    console.log('Client joined session:', { socketId: socket.id, clientType, sessionId, sessionStatus: session.status });
+    logger.info('客户端加入会话', { socketId: socket.id, clientType, sessionId, sessionStatus: session.status });
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     socket.emit('session-joined', {
       success: false,
       message: errorMessage,
     });
-    console.error('Error joining session:', errorMessage);
+    logger.error('加入会话失败', errorMessage);
   }
 }
 
@@ -211,14 +214,14 @@ function handleUserAuthorized(
     // 如果是新参与者，向Web端广播参与者加入事件
     if (added && session.webClient) {
       io.to(session.webClient).emit('participant-joined', { participant });
-      console.log('Participant joined session:', { nickname: participant.nickname, sessionId });
+      logger.info('参与者加入会话', { nickname: participant.nickname, sessionId });
     } else if (!added) {
-      console.log('Participant already in session:', { nickname: participant.nickname, sessionId });
+      logger.debug('参与者已在会话中', { nickname: participant.nickname, sessionId });
     }
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     socket.emit('error', { message: errorMessage });
-    console.error('Error handling user authorization:', errorMessage);
+    logger.error('用户授权处理失败', errorMessage);
   }
 }
 
@@ -257,11 +260,11 @@ function handleStartLottery(
     // 向该会话的所有客户端广播开始抽奖事件
     io.to(sessionId).emit('lottery-started', { duration, startTime });
 
-    console.log('Lottery started in session:', { sessionId, duration, startTime });
+    logger.info('抽奖开始', { sessionId, duration, startTime });
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     socket.emit('error', { message: errorMessage });
-    console.error('Error starting lottery:', errorMessage);
+    logger.error('开始抽奖失败', errorMessage);
   }
 }
 
@@ -308,17 +311,17 @@ function handleStopLottery(
         // 向该会话的所有客户端广播中奖结果和最终计数
         io.to(sessionId).emit('lottery-result', { winners, finalShakeData });
 
-        console.log('Lottery stopped in session:', { sessionId, winnerCount, winners });
+        logger.info('抽奖结束', { sessionId, winnerCount, winners });
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'Unknown error';
         socket.emit('error', { message: errorMessage });
-        console.error('Error finalizing lottery:', errorMessage);
+        logger.error('抽奖结算失败', errorMessage);
       }
     }, 200);
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     socket.emit('error', { message: errorMessage });
-    console.error('Error stopping lottery:', errorMessage);
+    logger.error('停止抽奖失败', errorMessage);
   }
 }
 
@@ -351,12 +354,12 @@ function handleShakeData(
 
     // 减少日志输出频率，只在每10次摇动时打印一次
     if (shakeCount % 10 === 0) {
-      console.log('Shake data updated:', { sessionId, userId, shakeCount });
+      logger.debug('摇动数据更新', { sessionId, userId, shakeCount });
     }
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     socket.emit('error', { message: errorMessage });
-    console.error('Error handling shake data:', errorMessage);
+    logger.error('处理摇动数据失败', errorMessage);
   }
 }
 
@@ -373,11 +376,11 @@ function handleDisconnect(
     try {
       // 从会话中移除H5客户端
       sessionManager.removeH5Client(sessionId, socket.id);
-      console.log('H5 client disconnected:', { socketId: socket.id, sessionId });
+      logger.info('H5客户端断开连接', { socketId: socket.id, sessionId });
     } catch (error) {
-      console.error('Error removing H5 client:', error);
+      logger.error('移除H5客户端失败', error);
     }
   }
 
-  console.log('Client disconnected:', socket.id);
+  logger.info('客户端断开连接', { socketId: socket.id });
 }

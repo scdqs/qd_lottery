@@ -5,6 +5,9 @@
 
 import { CorsOptions } from 'cors';
 import { Request, Response, NextFunction } from 'express';
+import { Logger } from '../utils/logger';
+
+const logger = Logger.create('Security');
 
 /**
  * CORS configuration
@@ -106,7 +109,7 @@ export const getHttpsOptions = () => {
     
     // Check if certificate files exist
     if (!fs.existsSync(certPath) || !fs.existsSync(keyPath)) {
-      console.warn('SSL certificates not found. Running without HTTPS.');
+      logger.info('未挂载SSL证书，以HTTP模式运行（SSL由反向代理处理）');
       return null;
     }
     
@@ -122,7 +125,7 @@ export const getHttpsOptions = () => {
     
     return options;
   } catch (error) {
-    console.error('Error loading SSL certificates:', error);
+    logger.error('加载SSL证书失败', error);
     return null;
   }
 };

@@ -38,3 +38,22 @@ Thumbs.db
 .cache/
 *.tar
 
+# Production environment files (use .example versions as reference)
+docker-compose.yml
+nginx-proxy.conf
+h5-client/.env.production
+web-client/.env.production
+
+# Claude Code local config (private)
+.claude/settings.local.json
+
+# SSL certificates
+ssl/
+
+# Development process docs
+TASK_*_IMPLEMENTATION_SUMMARY.md
+TASK_*_COMPLETION_SUMMARY.md
+FINAL_SYSTEM_VERIFICATION_REPORT.md
+**/CHECKPOINT_*_VERIFICATION.md
+**/IMPLEMENTATION_SUMMARY.md
+

@@ -4,6 +4,9 @@
  */
 
 import { SessionManager } from './SessionManager';
+import { Logger } from './utils/logger';
+
+const logger = Logger.create('Cleanup');
 
 export class SessionCleanupService {
   private sessionManager: SessionManager;
@@ -33,13 +36,11 @@ export class SessionCleanupService {
    */
   start(): void {
     if (this.cleanupInterval) {
-      console.warn('SessionCleanupService is already running');
+      logger.warn('清理服务已在运行中');
       return;
     }
 
-    console.log(
-      `Starting SessionCleanupService with interval: ${this.intervalMs}ms, expiry: ${this.expiryTimeMs}ms`
-    );
+    logger.info('清理服务已启动', { interval: `${this.intervalMs}ms`, expiry: `${this.expiryTimeMs}ms` });
 
     // Run cleanup immediately
     this.cleanup();
@@ -57,7 +58,7 @@ export class SessionCleanupService {
     if (this.cleanupInterval) {
       clearInterval(this.cleanupInterval);
       this.cleanupInterval = null;
-      console.log('SessionCleanupService stopped');
+      logger.info('清理服务已停止');
     }
   }
 
@@ -85,15 +86,13 @@ export class SessionCleanupService {
         const deleted = this.sessionManager.deleteSession(sessionId);
         if (deleted) {
           deletedCount++;
-          console.log(
-            `Deleted expired session: ${sessionId} (age: ${Math.round(sessionAge / 1000 / 60)} minutes)`
-          );
+          logger.info('删除过期会话', { sessionId, ageMinutes: Math.round(sessionAge / 1000 / 60) });
         }
       }
     }
 
     if (deletedCount > 0) {
-      console.log(`Cleanup completed: ${deletedCount} session(s) deleted`);
+      logger.info('过期会话清理完成', { deletedCount });
     }
 
     return deletedCount;
@@ -120,13 +119,13 @@ export class SessionCleanupService {
         const deleted = this.sessionManager.deleteSession(sessionId);
         if (deleted) {
           deletedCount++;
-          console.log(`Deleted finished session: ${sessionId}`);
+          logger.info('删除已完成会话', { sessionId });
         }
       }
     }
 
     if (deletedCount > 0) {
-      console.log(`Finished session cleanup: ${deletedCount} session(s) deleted`);
+      logger.info('已完成会话清理完成', { deletedCount });
     }
 
     return deletedCount;

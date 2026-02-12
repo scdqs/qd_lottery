@@ -1,5 +1,8 @@
 import axios from 'axios';
 import { WeChatUserInfo } from './types';
+import { Logger } from './utils/logger';
+
+const logger = Logger.create('WeChat');
 
 /**
  * 微信授权服务
@@ -24,7 +27,7 @@ export class WeChatAuthService {
     this.redirectUri = redirectUri || process.env.WECHAT_REDIRECT_URI || '';
 
     if (!this.appId || !this.appSecret || !this.redirectUri) {
-      console.warn('WeChat OAuth configuration is incomplete. Please set WECHAT_APP_ID, WECHAT_APP_SECRET, and WECHAT_REDIRECT_URI.');
+      logger.warn('微信OAuth配置不完整，请设置 WECHAT_APP_ID, WECHAT_APP_SECRET, WECHAT_REDIRECT_URI');
     }
   }
 
@@ -156,13 +159,13 @@ export class WeChatAuthService {
 
       // 打印原始数据用于调试（仅在开发环境）
       if (process.env.NODE_ENV !== 'production') {
-        console.log('WeChat userinfo raw response type:', typeof rawData, Buffer.isBuffer(rawData));
+        logger.debug('微信用户信息原始响应类型', { type: typeof rawData, isBuffer: Buffer.isBuffer(rawData) });
       }
 
       const data = JSON.parse(dataStr);
 
       // 打印解析后的昵称用于验证编码是否正确
-      console.log('WeChat userinfo parsed nickname:', data.nickname);
+      logger.info('微信用户昵称解析结果', { nickname: data.nickname });
 
       // 检查微信API返回的错误
       if (data.errcode) {
